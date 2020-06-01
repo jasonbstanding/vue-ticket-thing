@@ -8,19 +8,9 @@
       :style="{ backgroundImage: `url(${ticket.image_sml})` }"
     >
       <div class="overlay">
-        <router-link
-          class="ticket-link"
-          :to="{ name: 'ticket-show', params: { id: ticket.id } }"
-        >
-          <div class="date">{{ ticket.date }}</div>
-        </router-link>
+        <div class="date">{{ ticket.date }}</div>
         <div class="title" v-if="titleIfNotArtist">
-          <router-link
-            class="ticket-link"
-            :to="{ name: 'ticket-show', params: { id: ticket.id } }"
-          >
-            {{ ticket.title }}
-          </router-link>
+          {{ ticket.title }}
         </div>
         <div class="artist title" v-else :key="ticket.artist[0].id">
           {{ ticket.artist[0].name }}

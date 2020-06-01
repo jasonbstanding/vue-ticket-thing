@@ -1,8 +1,15 @@
 <template>
   <div id="nav" class="nav">
-    <router-link to="/" class="brand">Ticket thing</router-link>
+    <div class="jbs">
+      <a href="https://jasonbstanding.com"
+        ><img
+          src="https://www.jasonbstanding.com/blogparts/2018/02/red-fedora-152-14848.png"
+        />
+        jasonbstanding.com</a
+      >
+    </div>
     <nav>
-      <router-link :to="{ name: 'ticket-list' }">List</router-link>
+      <router-link :to="{ name: 'ticket-list' }">Ticket List</router-link>
     </nav>
   </div>
 </template>
@@ -18,12 +25,17 @@ export default {};
   align-items: center;
   height: 60px;
 }
-.nav > .brand {
-  font-family: "Montserrat", sans-serif;
+.jbs a {
+  font-family: "Noto Sans", sans-serif;
+  text-transform: uppercase;
   font-weight: 700;
   font-size: 1.5em;
-  color: #39b982;
+  color: purple;
   text-decoration: none;
+}
+.jbs img {
+  height: 50px;
+  vertical-align: middle;
 }
 .nav .nav-item {
   box-sizing: border-box;
