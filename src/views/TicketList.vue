@@ -1,11 +1,13 @@
 <template>
   <div>
     <h1>Ticket Listing</h1>
-    <TicketSummary
-      v-for="ticket in tickets"
-      :key="ticket.id"
-      :ticket="ticket"
-    />
+    <div class="ticketlist">
+      <TicketSummary
+        v-for="ticket in tickets"
+        :key="ticket.id"
+        :ticket="ticket"
+      />
+    </div>
   </div>
 </template>
 
@@ -33,3 +35,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.ticketlist {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+</style>
