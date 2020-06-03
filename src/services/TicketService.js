@@ -13,7 +13,7 @@ export default {
   getTickets() {
     return apiClient.get("/tickets");
   },
-  // getEvent(id) {
-  //   return apiClient.get("/events/" + id);
+  // getTicket(id) {
+  //   return apiClient.get("/tickets/" + id);
   // },
 };

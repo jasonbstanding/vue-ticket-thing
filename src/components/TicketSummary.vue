@@ -9,18 +9,26 @@
     >
       <div class="overlay">
         <div class="date">{{ ticket.date }}</div>
-        <div class="title" v-if="titleIfNotArtist">
-          {{ ticket.title }}
+        <div class="title">
+          <router-link
+            class="ticket-link"
+            :to="{
+              name: 'ticket-show',
+              params: {
+                ticket: ticket,
+                id: ticket.id,
+              },
+            }"
+          >
+            {{ ticket.title }}
+          </router-link>
         </div>
-        <div class="artist title" v-else :key="ticket.artist[0].id">
-          {{ ticket.artist[0].name }}
-        </div>
-        <div v-if="titleIfNotArtist" class="artist" :key="ticket.artist[0].id">
+        <div v-if="ifArtist" class="artist" :key="ticket.artist[0].id">
           {{ ticket.artist[0].name }}
         </div>
         <div class="details">
           <span class="price">{{ ticketPrice }}</span>
-          <span class="venue" :key="ticket.venue[0].id">{{
+          <span v-if="ifVenue" class="venue" :key="ticket.venue[0].id">{{
             ticket.venue[0].name
           }}</span>
         </div>
@@ -42,11 +50,17 @@ export default {
         return "Free";
       }
     },
-    titleIfNotArtist: function() {
-      if (this.ticket.title === this.ticket.artist[0].name) {
-        return null;
+    ifArtist: function() {
+      if (this.ticket.artist) {
+        return true;
       }
-      return this.ticket.title;
+      return false;
+    },
+    ifVenue: function() {
+      if (this.ticket.venue) {
+        return true;
+      }
+      return false;
     },
   },
 };
