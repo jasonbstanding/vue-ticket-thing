@@ -72,7 +72,6 @@ export default {
   padding-right: 20px;
   margin-bottom: 24px;
   transition: all 0.2s linear;
-  cursor: pointer;
   width: 400px;
   display: flex;
   position: relative;
