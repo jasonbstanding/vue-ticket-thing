@@ -2,48 +2,93 @@
   <div>
     <h1>Ticket Listing</h1>
     <ScaleLoader v-if="this.loading" color="orange" />
-    <div v-else class="ticketlist">
-      <TicketSummary
-        v-for="ticket in tickets"
-        :key="ticket.id"
-        :ticket="ticket"
-      />
+    <div v-else>
+      <div class="filterlist">
+        <div v-if="this.filters.length > 0" class="clear">
+          <div @click="clearFilters" class="clear">Clear</div>
+        </div>
+        <div v-for="filter in this.filters" :key="filter.type">
+          <div>{{ filter.type }} : {{ filter.filterText }}</div>
+        </div>
+      </div>
+      <div class="ticketlist">
+        <TicketSummary
+          v-for="ticket in filteredTickets"
+          :key="ticket.id"
+          :ticket="ticket"
+          @filterList="filterList"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import TicketSummary from "@/components/TicketSummary.vue";
-import TicketService from "@/services/TicketService.js";
 import { ScaleLoader } from "@saeris/vue-spinners";
+import { mapState, mapGetters } from "vuex";
 
 export default {
+  name: "ticket-list",
   components: {
     TicketSummary,
     ScaleLoader,
   },
   data() {
     return {
-      tickets: [],
-      loading: false,
+      filters: [],
     };
   },
   created() {
-    this.loading = true;
-    TicketService.getTickets()
-      .then((response) => {
-        this.tickets = response.data;
-        this.loading = false;
-      })
-      .catch((error) => {
-        console.log("There was an error:", error.response);
-        this.loading = false;
-      });
+    if (!this.getTicketsTotal) {
+      this.$store.dispatch("fetchTickets");
+    }
+  },
+  computed: {
+    ...mapState(["tickets", "ticket", "loading", "filteredTickets"]),
+    ...mapGetters(["getTicketsTotal", "getTicketsByGigType"]),
+  },
+  methods: {
+    filterList(filter) {
+      // debugger; // eslint-disable-line no-debugger
+      // console.log(filter.type);
+      // console.log(filter.id);
+      this.filters.push(filter);
+      this.$store.dispatch("setFilteredTicketList", filter);
+      //        return obj.gigtype[0].term_id === filter.id;
+    },
+    clearFilters() {
+      this.$store.dispatch("clearFilters");
+      this.filters = [];
+    },
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.filterlist {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  div {
+    background-color: #999999; /* Green */
+    border: none;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+  }
+
+  .clear {
+    background-color: #4caf50; /* Green */
+  }
+}
 .ticketlist {
   display: flex;
   flex-direction: row;

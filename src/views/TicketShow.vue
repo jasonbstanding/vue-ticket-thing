@@ -5,14 +5,18 @@
       <div class="title">
         {{ ticket.title }}
       </div>
-      <div v-if="ifArtist" class="artist" :key="ticket.artist[0].id">
+      <div v-if="ifArtist" class="artist" :key="ticket.artist[0].type_id">
         Artist: {{ ticket.artist[0].name }}
       </div>
-      <div class="gigtype" v-for="gigtype in ticket.gigtype" :key="gigtype.id">
+      <div
+        class="gigtype"
+        v-for="gigtype in ticket.gigtype"
+        :key="gigtype.type_id"
+      >
         {{ gigtype.name }}
       </div>
       <div class="price">Price: {{ ticketPrice }}</div>
-      <div v-if="ifVenue" class="venue" :key="ticket.venue[0].id">
+      <div v-if="ifVenue" class="venue" :key="ticket.venue[0].type_id">
         Venue: {{ ticket.venue[0].name }}
       </div>
     </div>

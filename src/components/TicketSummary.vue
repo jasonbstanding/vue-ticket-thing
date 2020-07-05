@@ -1,14 +1,27 @@
 <template>
   <div class="ticket -shadow">
-    <div class="gigtype" v-for="gigtype in ticket.gigtype" :key="gigtype.id">
-      {{ gigtype.name }}
+    <div
+      class="gigtype"
+      v-for="gigtype in ticket.gigtype"
+      :key="gigtype.term_id"
+    >
+      <div @click="filterList('gigtype', gigtype.term_id, gigtype.name)">
+        {{ gigtype.name }}
+      </div>
     </div>
     <div
       class="ticketbody"
       :style="{ backgroundImage: `url(${ticket.image_sml})` }"
     >
       <div class="overlay">
-        <div class="date">{{ ticket.date }}</div>
+        <div
+          class="date"
+          @click="
+            filterList('date', parseInt(ticket.date), parseInt(ticket.date))
+          "
+        >
+          {{ ticket.date }}
+        </div>
         <div class="title">
           <router-link
             class="ticket-link"
@@ -23,14 +36,34 @@
             {{ ticket.title }}
           </router-link>
         </div>
-        <div v-if="ifArtist" class="artist" :key="ticket.artist[0].id">
-          {{ ticket.artist[0].name }}
+        <div v-if="ifArtist" class="artist" :key="ticket.artist[0].term_id">
+          <div
+            @click="
+              filterList(
+                'artist',
+                ticket.artist[0].term_id,
+                ticket.artist[0].name
+              )
+            "
+          >
+            {{ ticket.artist[0].name }}
+          </div>
         </div>
         <div class="details">
           <span class="price">{{ ticketPrice }}</span>
-          <span v-if="ifVenue" class="venue" :key="ticket.venue[0].id">{{
-            ticket.venue[0].name
-          }}</span>
+          <span v-if="ifVenue" class="venue" :key="ticket.venue[0].term_id">
+            <span
+              @click="
+                filterList(
+                  'venue',
+                  ticket.venue[0].term_id,
+                  ticket.venue[0].name
+                )
+              "
+            >
+              {{ ticket.venue[0].name }}</span
+            ></span
+          >
         </div>
       </div>
     </div>
@@ -41,6 +74,11 @@
 export default {
   props: {
     ticket: Object,
+  },
+  methods: {
+    filterList(type, filterVal, filterText) {
+      this.$emit("filterList", { type, filterVal, filterText });
+    },
   },
   computed: {
     ticketPrice: function() {

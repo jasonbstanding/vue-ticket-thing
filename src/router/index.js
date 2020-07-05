@@ -7,6 +7,7 @@ const routes = [
   {
     path: "/",
     name: "ticket-list",
+    props: true,
     component: () =>
       import(/* webpackChunkName: "list" */ "../views/TicketList.vue"),
   },
