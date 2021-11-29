@@ -17,8 +17,22 @@
           :key="ticket.id"
           :ticket="ticket"
           @filterList="filterList"
+          @showModal="modalShow(true)"
+          @modalClose="modalShow"
         />
       </div>
+      <!-- use the modal component, pass in the prop -->
+      <transition name="modal">
+      <modal v-if="showModal">
+        <!--
+          you can use custom content here to overwrite
+          default content
+        -->
+        <template v-slot:header>
+          <h3></h3>
+        </template>
+      </modal>
+      </transition>
     </div>
   </div>
 </template>
@@ -27,16 +41,19 @@
 import TicketSummary from "@/components/TicketSummary.vue";
 import { ScaleLoader } from "@saeris/vue-spinners";
 import { mapState, mapGetters } from "vuex";
+import Modal from "@/components/Modal.vue";
 
 export default {
   name: "ticket-list",
   components: {
     TicketSummary,
     ScaleLoader,
+    Modal,
   },
   data() {
     return {
       filters: [],
+      showModal: false
     };
   },
   created() {
@@ -61,6 +78,10 @@ export default {
       this.$store.dispatch("clearFilters");
       this.filters = [];
     },
+    modalShow(modalVisible) {
+      this.showModal=modalVisible;
+      console.log('xxx'+this.showModal);
+    }
   },
 };
 </script>

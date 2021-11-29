@@ -23,7 +23,9 @@
           {{ ticket.date }}
         </div>
         <div class="title">
-          <router-link
+          <button id="show-modal" @click="$emit('showModal')">{{ ticket.title }}</button>
+
+          <!-- <router-link
             class="ticket-link"
             :to="{
               name: 'ticket-show',
@@ -32,9 +34,7 @@
                 id: ticket.id,
               },
             }"
-          >
-            {{ ticket.title }}
-          </router-link>
+          > -->
         </div>
         <div v-if="ifArtist" class="artist" :key="ticket.artist[0].term_id">
           <div
