@@ -18,12 +18,13 @@
           :ticket="ticket"
           @filterList="filterList"
           @showModal="modalShow(true)"
-          @modalClose="modalShow"
         />
       </div>
       <!-- use the modal component, pass in the prop -->
       <transition name="modal">
-      <modal v-if="showModal">
+      <Modal v-if="showModal"
+          @modalClose="modalShow(false)"
+      >
         <!--
           you can use custom content here to overwrite
           default content
@@ -31,7 +32,7 @@
         <template v-slot:header>
           <h3></h3>
         </template>
-      </modal>
+      </Modal>
       </transition>
     </div>
   </div>
