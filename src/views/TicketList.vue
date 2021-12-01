@@ -17,22 +17,15 @@
           :key="ticket.id"
           :ticket="ticket"
           @filterList="filterList"
-          @showModal="modalShow(true)"
+          @showModal="modalShow"
         />
       </div>
       <!-- use the modal component, pass in the prop -->
       <transition name="modal">
       <Modal v-if="showModal"
-          @modalClose="modalShow(false)"
-      >
-        <!--
-          you can use custom content here to overwrite
-          default content
-        -->
-        <template v-slot:header>
-          <h3></h3>
-        </template>
-      </Modal>
+        :ticket="selectedTicket"
+        @modalClose="modalClose"
+      />
       </transition>
     </div>
   </div>
@@ -54,7 +47,8 @@ export default {
   data() {
     return {
       filters: [],
-      showModal: false
+      showModal: false,
+      selectedTicket: {}
     };
   },
   created() {
@@ -68,20 +62,19 @@ export default {
   },
   methods: {
     filterList(filter) {
-      // debugger; // eslint-disable-line no-debugger
-      // console.log(filter.type);
-      // console.log(filter.id);
       this.filters.push(filter);
       this.$store.dispatch("setFilteredTicketList", filter);
-      //        return obj.gigtype[0].term_id === filter.id;
     },
     clearFilters() {
       this.$store.dispatch("clearFilters");
       this.filters = [];
     },
-    modalShow(modalVisible) {
-      this.showModal=modalVisible;
-      console.log('xxx'+this.showModal);
+    modalShow(ticket) {
+      this.selectedTicket = ticket;
+      this.showModal=true;
+    },
+    modalClose() {
+      this.showModal=false;
     }
   },
 };

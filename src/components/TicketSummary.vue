@@ -23,7 +23,7 @@
           {{ ticket.date }}
         </div>
         <div class="title">
-          <button id="show-modal" @click="$emit('showModal')">{{ ticket.title }}</button>
+          <button id="show-modal" @click="$emit('showModal', ticket)">{{ ticket.title }}</button>
 
           <!-- <router-link
             class="ticket-link"

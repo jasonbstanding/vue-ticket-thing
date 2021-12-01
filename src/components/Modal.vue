@@ -6,20 +6,21 @@
 
           <div class="modal-header">
             <slot name="header">
-              default header
+              <div>{{ ticket.date }}</div>
+              <div>{{ ticket.artist[0].name }}</div>
             </slot>
           </div>
 
           <div class="modal-body">
             <slot name="body">
-              default body
+              <div>{{ ticket.title }}</div>
+              <div v-if="ticket.image_lg"><img :src="ticket.image_lg" /></div>
             </slot>
           </div>
 
           <div class="modal-footer">
             <slot name="footer">
-              default footer
-              <button class="modal-default-button" @click="$emit('modalClose', false)">
+              <button class="modal-default-button" @click="$emit('modalClose')">
                 OK
               </button>
             </slot>
@@ -28,6 +29,16 @@
       </div>
     </div>
 </template>
+
+<script>
+
+export default {
+  props: {
+    ticket: Object
+  }
+}
+</script>
+
 
 <style scoped>
 .modal-mask {
