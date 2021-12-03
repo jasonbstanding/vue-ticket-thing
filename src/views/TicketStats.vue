@@ -34,7 +34,6 @@ export default {
             },
             xaxis: {
                 type: 'category',
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 tickPlacement: 'between',
                 position: 'top',
                 labels: {
@@ -97,7 +96,7 @@ export default {
                 show: false
             }            
           }
-      }
+      } 
   },
   created() {
     if (!this.getTicketsTotal) {
@@ -115,4 +114,7 @@ export default {
 </script>
 
 <style scoped>
+.apexcharts-tooltip:not(:empty) {
+  padding: 6px 9px;
+}
 </style>

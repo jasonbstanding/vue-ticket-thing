@@ -168,6 +168,7 @@ export default new Vuex.Store({
       const aMonths = Array.from({length: 12}, (v, k) => k+1); 
       const dTo = new Date(state.tickets[0].date);
       const dFrom = new Date(state.tickets[state.tickets.length -1].date);
+      const mthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
       for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
         let aYearTotals = [];
@@ -177,10 +178,10 @@ export default new Vuex.Store({
             var [tYear, tMonth] = t.date.split('-');
             return (item === +tMonth) && (i == tYear);
           });
-          aYearTotals.push({x: item, y: events.length});
+          aYearTotals.push({x: mthLabels[item-1], y: events.length});
           yearTotal+= events.length;
         });
-        aYearTotals.push({x: 'total', y: yearTotal});
+        aYearTotals.push({x: 'Total', y: yearTotal});
         dataOut.push({name: i, data: aYearTotals});
       }
 
