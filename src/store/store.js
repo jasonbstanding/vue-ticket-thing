@@ -171,13 +171,16 @@ export default new Vuex.Store({
 
       for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
         let aYearTotals = [];
+        let yearTotal = 0;
         aMonths.map(function(item) {
           let events = state.tickets.filter(t => {
             var [tYear, tMonth] = t.date.split('-');
             return (item === +tMonth) && (i == tYear);
           });
           aYearTotals.push({x: item, y: events.length});
+          yearTotal+= events.length;
         });
+        aYearTotals.push({x: 'total', y: yearTotal});
         dataOut.push({name: i, data: aYearTotals});
       }
 
