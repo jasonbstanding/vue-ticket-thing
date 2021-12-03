@@ -9,6 +9,7 @@ export default new Vuex.Store({
     tickets: [],
     filteredTickets: [],
     ticketsYearMonth: [],
+    ticketsTypeYear: [],
     ticketsTotal: 0,
     ticket: {},
     loading: true,
@@ -172,16 +173,61 @@ export default new Vuex.Store({
         let aYearTotals = [];
         aMonths.map(function(item) {
           let events = state.tickets.filter(t => {
-            var [tYear, tMonth] = t.date.split('-'); // Or, var month = e.date.split('-')[1];
+            var [tYear, tMonth] = t.date.split('-');
             return (item === +tMonth) && (i == tYear);
           });
           aYearTotals.push({x: item, y: events.length});
         });
-        dataOut.push({series: i, data: aYearTotals});
+        dataOut.push({name: i, data: aYearTotals});
       }
 
       state.ticketsYearMonth = dataOut;
       return state.ticketsYearMonth;
-    }
+    },
+    // getYearTypeCount: (state) => {
+    //   // var arrTix = Array.from(document.querySelectorAll('*')).find(e => e.__vue__).__vue__.$store.state.tickets      let dataOut = [];
+    //   const gigTypes = [
+    //     'Comedy', 
+    //     'Film', 
+    //     'Gig/Concert', 
+    //     'Spoken Word', 
+    //     'Musical Comedy', 
+    //     'Sport', 
+    //     'Whisky Festival', 
+    //     'Musical', 
+    //     'Art', 
+    //     'Museum or Tour', 
+    //     'Musical Revue', 
+    //     'Play', 
+    //     'Choral or Classical', 
+    //     'Festival', 
+    //     'Beer Festival', 
+    //     'Radio/TV Recording', 
+    //     'Ballet', 
+    //     'Theatre', 
+    //     'Cabaret', 
+    //     'Opera', 
+    //     'Debate', 
+    //     'Dog Show'
+    //   ];
+    //   const dTo = new Date(state.tickets[0].date);
+    //   const dFrom = new Date(state.tickets[state.tickets.length -1].date);
+    //   console.log(gigTypes);
+
+    //   gigTypes.map(function(gigType) {
+    //     let aTypeTotals = [];
+    //     for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
+    //       let events = state.tickets.filter(t => {
+    //         var [tYear, tMonth] = t.date.split('-');
+    //         return (t => gigtype.includes[gigType] ) && (i == tYear);
+    //       });
+    //       aTypeTotals.push({x: i, y: events.length});
+    //     }
+    //     dataOut.push({name: gigType, data: aTypeTotals});
+    //   });
+
+    //   state.ticketsTypeYear = dataOut;
+    //   return state.ticketsTypeYear;
+    // },
   },
 });

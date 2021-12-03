@@ -21,13 +21,25 @@ export default {
             chart: {
               height: 350,
               type: 'heatmap',
+              toolbar: {
+                  show: false
+              }
             },
             dataLabels: {
               enabled: true
             },
-            colors: ["#008FFB"],
+            colors: ["#668FFB"],
             title: {
               text: 'HeatMap Chart (Single color)'
+            },
+            xaxis: {
+                type: 'category',
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                tickPlacement: 'between',
+                position: 'top',
+                labels: {
+                    show: true
+                }
             },
             yaxis: {
                 labels: {
@@ -50,9 +62,6 @@ export default {
     ...mapGetters(["getYearMonthCount", "getTicketsTotal"]),
     yearMonthStats: function() {
         return this.getYearMonthCount;
-    },
-    tkts() {
-        return this.tickets;
     } 
   }
 };
