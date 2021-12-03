@@ -114,7 +114,8 @@ export default {
 </script>
 
 <style scoped>
-.apexcharts-tooltip:not(:empty) {
-  padding: 6px 9px;
+#chart {
+  max-width: 800px;
+  margin: 55px auto;
 }
 </style>
