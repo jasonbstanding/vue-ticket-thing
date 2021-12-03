@@ -8,6 +8,7 @@ export default new Vuex.Store({
   state: {
     tickets: [],
     filteredTickets: [],
+    ticketsYearMonth: [],
     ticketsTotal: 0,
     ticket: {},
     loading: true,
@@ -95,5 +96,92 @@ export default new Vuex.Store({
     getTicketsTotal: (state) => {
       return state.tickets.length;
     },
+    getYearMonthCount: (state) => {
+            // [
+    // {
+    //     "id": 7447,
+    //     "date": "2016-05-24",
+    //     "title": "Gary Delaney",
+    //     "price": "15",
+    //     "venue": [
+    //     {
+    //         "term_id": 982,
+    //         "name": "The Lantern at Colston Hall (Bristol)"
+    //     }
+    //     ],
+    //     "artist": [
+    //     {
+    //         "term_id": 992,
+    //         "name": "Gary Delaney"
+    //     }
+    //     ],
+    //     "gigtype": [
+    //     {
+    //         "term_id": 454,
+    //         "name": "Comedy"
+    //     }
+    //     ],
+    //     "image_sml": "https://www.jasonbstanding.com/blogparts/2016/05/IMG_0241-300x214.jpg",
+    //     "image_lg": "https://www.jasonbstanding.com/blogparts/2016/05/IMG_0241.jpg"
+    // },
+    // {
+    //     "id": 7443,
+    //     "date": "2016-04-06",
+    //     "title": "Gregory Porter",
+    //     "price": "30",
+    //     "venue": [
+    //     {
+    //         "term_id": 959,
+    //         "name": "Colston Hall Bristol"
+    //     }
+    //     ],
+    //     "artist": [
+    //     {
+    //         "term_id": 990,
+    //         "name": "Gregory Porter"
+    //     }
+    //     ],
+    //     "gigtype": [
+    //     {
+    //         "term_id": 461,
+    //         "name": "Gig/Concert"
+    //     }
+    //     ],
+    //     "image_sml": "https://www.jasonbstanding.com/blogparts/2016/05/IMG_0237-300x205.jpg",
+    //     "image_lg": "https://www.jasonbstanding.com/blogparts/2016/05/IMG_0237.jpg"
+    // },        
+    // ... ]
+      // {
+      //  series: [
+      //   {
+      //     name: "2016",
+      //     data: [
+      //        { x: 'Apr', y: 1 }, 
+      //        { x: 'May', y: 1 }, 
+      //     ] 
+      //   },
+      // ]
+      // }
+    //   debugger; // eslint-disable-line no-debugger
+      let dataOut = [];
+      const aMonths = Array.from({length: 12}, (v, k) => k+1); 
+      const dTo = new Date(state.tickets[0].date);
+      const dFrom = new Date(state.tickets[state.tickets.length -1].date);
+
+      for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
+        let aYearTotals = [];
+        aMonths.map(function(item) {
+          let events = state.tickets.filter(t => {
+            var [tYear, tMonth] = t.date.split('-'); // Or, var month = e.date.split('-')[1];
+            return (item === +tMonth) && (i == tYear);
+          });
+          aYearTotals.push({x: item, y: events.length});
+        });
+        dataOut.push({series: i, data: aYearTotals});
+      }
+
+      state.ticketsYearMonth = dataOut;
+      return state.ticketsYearMonth;
+    }
   },
 });
