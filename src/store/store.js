@@ -188,50 +188,70 @@ export default new Vuex.Store({
       state.ticketsYearMonth = dataOut;
       return state.ticketsYearMonth;
     },
-    // getYearTypeCount: (state) => {
-    //   // var arrTix = Array.from(document.querySelectorAll('*')).find(e => e.__vue__).__vue__.$store.state.tickets      let dataOut = [];
-    //   const gigTypes = [
-    //     'Comedy', 
-    //     'Film', 
-    //     'Gig/Concert', 
-    //     'Spoken Word', 
-    //     'Musical Comedy', 
-    //     'Sport', 
-    //     'Whisky Festival', 
-    //     'Musical', 
-    //     'Art', 
-    //     'Museum or Tour', 
-    //     'Musical Revue', 
-    //     'Play', 
-    //     'Choral or Classical', 
-    //     'Festival', 
-    //     'Beer Festival', 
-    //     'Radio/TV Recording', 
-    //     'Ballet', 
-    //     'Theatre', 
-    //     'Cabaret', 
-    //     'Opera', 
-    //     'Debate', 
-    //     'Dog Show'
-    //   ];
-    //   const dTo = new Date(state.tickets[0].date);
-    //   const dFrom = new Date(state.tickets[state.tickets.length -1].date);
-    //   console.log(gigTypes);
+    getYearTypeCount: (state) => {
+      // var arrTix = Array.from(document.querySelectorAll('*')).find(e => e.__vue__).__vue__.$store.state.tickets      let dataOut = [];
+      const gigTypes = [
+        'Comedy', 
+        'Film', 
+        'Gig/Concert', 
+        'Spoken Word', 
+        'Musical Comedy', 
+        'Sport', 
+        'Whisky Festival', 
+        'Musical', 
+        'Art', 
+        'Museum or Tour', 
+        'Musical Revue', 
+        'Play', 
+        'Choral or Classical', 
+        'Festival', 
+        'Beer Festival', 
+        'Radio/TV Recording', 
+        'Ballet', 
+        'Theatre', 
+        'Cabaret', 
+        'Opera', 
+        'Debate', 
+        'Dog Show'
+      ];
+      let dataOut = [];
+      const dTo = new Date(state.tickets[0].date);
+      const dFrom = new Date(state.tickets[state.tickets.length -1].date);
+      console.log(gigTypes);
 
-    //   gigTypes.map(function(gigType) {
-    //     let aTypeTotals = [];
-    //     for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
-    //       let events = state.tickets.filter(t => {
-    //         var [tYear, tMonth] = t.date.split('-');
-    //         return (t => gigtype.includes[gigType] ) && (i == tYear);
-    //       });
-    //       aTypeTotals.push({x: i, y: events.length});
-    //     }
-    //     dataOut.push({name: gigType, data: aTypeTotals});
-    //   });
+      gigTypes.map(function(gigType) {
+        let aTypeTotals = [];
+        for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
+          let events = state.tickets.filter(t => {
+            var [tYear] = t.date.split('-');
+            return (t => t.gigtype.includes[gigType] ) && (i == tYear);
+          });
+          aTypeTotals.push({x: i, y: events.length});
+        }
+        dataOut.push({name: gigType, data: aTypeTotals});
+      });
 
-    //   state.ticketsTypeYear = dataOut;
-    //   return state.ticketsTypeYear;
-    // },
+      state.ticketsTypeYear = dataOut;
+      return state.ticketsTypeYear;
+
+//       arrDataOut = [];
+//       const gigType = "Comedy";
+//         let aTypeTotals = [];
+//         for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
+//            let events = arrTix.filter(t => {
+//               var [tYear] = t.date.split('-');
+//               return (i == tYear);
+//             })
+// //          let events = arrTix.filter(t => {
+// //            var [tYear] = t.date.split('-');
+// //            return (t => t.gigtype.name.includes[gigType] ) && (i == tYear);
+// //          });
+//           console.log(gigType);
+//           console.log(i);
+//           console.log(events);
+//           aTypeTotals.push({x: i, y: events.length});
+//         }
+//         arrDataOut.push({name: gigType, data: aTypeTotals});      
+    },
   },
 });
