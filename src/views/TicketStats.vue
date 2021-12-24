@@ -45,7 +45,7 @@ export default {
 </script>
 
 <style scoped>
-#yearmonth-chart {
+#yearmonth-chart, #genreyear-chart {
   max-width: 800px;
   margin: 55px auto;
 }

@@ -9,16 +9,16 @@ const gyChartOptions = {
     dataLabels: {
       enabled: true
     },
-    // colors: ["#668FFB"],
     title: {
       text: 'Tickets by Gig Type / Year'
     },
     xaxis: {
-        type: 'category',
-        tickPlacement: 'between',
         position: 'top',
-        labels: {
-            show: true
+        tickPlacement: 'between',
+        type: 'category',
+        labels: { 
+            show: true,
+            rotate: 45
         }
     },
     yaxis: {
@@ -63,7 +63,7 @@ const gyChartOptions = {
                 },
                 {
                     from: 26,
-                    to: 100,
+                    to: 200,
                     color: '#000000'
                 }
             ]

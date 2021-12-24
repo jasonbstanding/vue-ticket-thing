@@ -4,6 +4,20 @@ import TicketService from "@/services/TicketService.js";
 
 Vue.use(Vuex);
 
+function filterByGigtype(array, value){
+  var filtered = [];
+  for(var i = 0; i < array.length; i++){
+      var obj = array[i];
+        if (typeof(obj) === "object") {
+            var item = obj['name'];
+            if(item == value){
+                filtered.push(item);
+            }
+        }
+  }    
+  return filtered;
+}
+
 export default new Vuex.Store({
   state: {
     tickets: [],
@@ -191,67 +205,52 @@ export default new Vuex.Store({
     getYearTypeCount: (state) => {
       // var arrTix = Array.from(document.querySelectorAll('*')).find(e => e.__vue__).__vue__.$store.state.tickets      let dataOut = [];
       const gigTypes = [
+        'Gig/Concert', 
         'Comedy', 
         'Film', 
-        'Gig/Concert', 
-        'Spoken Word', 
-        'Musical Comedy', 
-        'Sport', 
-        'Whisky Festival', 
-        'Musical', 
-        'Art', 
-        'Museum or Tour', 
-        'Musical Revue', 
         'Play', 
-        'Choral or Classical', 
-        'Festival', 
-        'Beer Festival', 
-        'Radio/TV Recording', 
-        'Ballet', 
+        'Musical', 
+        'Spoken Word', 
+        'Museum or Tour', 
         'Theatre', 
-        'Cabaret', 
+        'Radio/TV Recording', 
+        'Choral or Classical', 
+        'Musical Comedy', 
+        'Art', 
         'Opera', 
+        'Sport', 
+        'Musical Revue', 
+        'Ballet', 
+        'Beer Festival', 
+        'Whisky Festival', 
+        'Festival', 
+        'Cabaret', 
         'Debate', 
         'Dog Show'
       ];
+      gigTypes.reverse();
       let dataOut = [];
       const dTo = new Date(state.tickets[0].date);
       const dFrom = new Date(state.tickets[state.tickets.length -1].date);
-      console.log(gigTypes);
 
       gigTypes.map(function(gigType) {
         let aTypeTotals = [];
+        let typeTotal = 0;
         for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
           let events = state.tickets.filter(t => {
             var [tYear] = t.date.split('-');
-            return (t => t.gigtype.includes[gigType] ) && (i == tYear);
+            let filterList = filterByGigtype(t.gigtype, gigType);
+            return (filterList.length > 0) && (i == tYear);
           });
           aTypeTotals.push({x: i, y: events.length});
+          typeTotal+= events.length;
         }
+        aTypeTotals.push({x: 'Total', y: typeTotal});
         dataOut.push({name: gigType, data: aTypeTotals});
       });
 
       state.ticketsTypeYear = dataOut;
-      return state.ticketsTypeYear;
-
-//       arrDataOut = [];
-//       const gigType = "Comedy";
-//         let aTypeTotals = [];
-//         for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
-//            let events = arrTix.filter(t => {
-//               var [tYear] = t.date.split('-');
-//               return (i == tYear);
-//             })
-// //          let events = arrTix.filter(t => {
-// //            var [tYear] = t.date.split('-');
-// //            return (t => t.gigtype.name.includes[gigType] ) && (i == tYear);
-// //          });
-//           console.log(gigType);
-//           console.log(i);
-//           console.log(events);
-//           aTypeTotals.push({x: i, y: events.length});
-//         }
-//         arrDataOut.push({name: gigType, data: aTypeTotals});      
+      return state.ticketsTypeYear; 
     },
   },
 });
