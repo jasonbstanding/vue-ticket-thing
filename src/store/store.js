@@ -4,6 +4,10 @@ import TicketService from "@/services/TicketService.js";
 
 Vue.use(Vuex);
 
+Number.prototype.round = function(places) {
+  return +(Math.round(this + "e+" + places)  + "e-" + places);
+}
+
 function filterByGigtype(array, value){
   var filtered = [];
   for(var i = 0; i < array.length; i++){
@@ -17,6 +21,43 @@ function filterByGigtype(array, value){
   }    
   return filtered;
 }
+
+// function filterByProperty(array, prop, value){
+//   var filtered = [];
+//   for(var i = 0; i < array.length; i++){
+//       var obj = array[i];
+//       for (var key in obj) {
+//           if (typeof(obj[key]) === "object") {
+//               var item = obj[key];
+//               if(item[prop] == value){
+//                   filtered.push(item);
+//               }
+//           }
+//       }
+//   }    
+//   return filtered;
+// }
+
+
+// function filterByYear(array, prop, value){
+//   var filtered = [];
+//   for(var i = 0; i < array.length; i++){
+
+//       var obj = array[i];
+
+//       for(var key in obj){
+//           if(typeof(obj[key] == "object")){
+//               var item = obj[key];
+//               if(item[prop] == value){
+//                   filtered.push(item);
+//               }
+//           }
+//       }
+
+//   }    
+
+//   return filtered;
+// }
 
 export default new Vuex.Store({
   state: {
@@ -251,6 +292,38 @@ export default new Vuex.Store({
 
       state.ticketsTypeYear = dataOut;
       return state.ticketsTypeYear; 
+    },
+    getYearMonthTotals: (state) => {
+      let dataOut = [];
+      const aMonths = Array.from({length: 12}, (v, k) => k+1); 
+      const dTo = new Date(state.tickets[0].date);
+      const dFrom = new Date(state.tickets[state.tickets.length -1].date);
+      const mthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
+        let aYearTotals = [];
+        let yearTotal = 0;
+        aMonths.map(function(item) {
+          let events = state.tickets.filter(t => {
+            var [tYear, tMonth] = t.date.split('-');
+            return (item === +tMonth) && (i == tYear);
+          });
+
+          let sum = events.reduce(function(prev, cur) {
+            return prev + (cur.price ? Number(cur.price).round(2) : 0);
+          }, 0);     
+
+          sum = sum || 0;
+
+          aYearTotals.push({x: mthLabels[item-1], y: Number(sum).round(2).toFixed(2)});
+          yearTotal+= Number(sum).round(2);
+        });
+        aYearTotals.push({x: 'Total', y: Number(yearTotal).round(2).toFixed(2)});
+        dataOut.push({name: i, data: aYearTotals});
+      }
+
+      state.ticketsYearMonth = dataOut;
+      return state.ticketsYearMonth;
     },
   },
 });
