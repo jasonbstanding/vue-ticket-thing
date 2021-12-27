@@ -68,10 +68,20 @@ export default new Vuex.Store({
     ticketsTotal: 0,
     ticket: {},
     loading: true,
+    aMonths: Array.from({length: 12}, (v, k) => k+1),
+    aMonthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    yearFrom: null,
+    yearTo: null,
   },
   mutations: {
     SET_TICKETS(state, tickets) {
       state.tickets = tickets;
+    },
+    SET_DATES(state, tickets) {
+      const dTo = new Date(tickets[0].date);
+      const dFrom = new Date(tickets[tickets.length-1].date);
+      state.yearFrom = dFrom.getFullYear();
+      state.yearTo = dTo.getFullYear();
     },
     SET_TICKET(state, ticket) {
       state.ticket = ticket;
@@ -87,6 +97,7 @@ export default new Vuex.Store({
         .then((response) => {
           commit("SET_TICKETS", response.data);
           state.filteredTickets = state.tickets;
+          commit("SET_DATES", response.data);
           state.loading = false;
         })
         .catch((error) => {
@@ -220,24 +231,20 @@ export default new Vuex.Store({
       // }
     //   debugger; // eslint-disable-line no-debugger
       let dataOut = [];
-      const aMonths = Array.from({length: 12}, (v, k) => k+1); 
-      const dTo = new Date(state.tickets[0].date);
-      const dFrom = new Date(state.tickets[state.tickets.length -1].date);
-      const mthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-      for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
+      for (var iterateYear=state.yearFrom; iterateYear <= state.yearTo; iterateYear++) {
         let aYearTotals = [];
         let yearTotal = 0;
-        aMonths.map(function(item) {
-          let events = state.tickets.filter(t => {
-            var [tYear, tMonth] = t.date.split('-');
-            return (item === +tMonth) && (i == tYear);
+        state.aMonths.map(function(iterateMonth) {
+          let events = state.tickets.filter(iterateTicket => {
+            var [tYear, tMonth] = iterateTicket.date.split('-');
+            return (iterateMonth === +tMonth) && (iterateYear == tYear);
           });
-          aYearTotals.push({x: mthLabels[item-1], y: events.length});
+          aYearTotals.push({x: state.aMonthNames[iterateMonth-1], y: events.length});
           yearTotal+= events.length;
         });
         aYearTotals.push({x: 'Total', y: yearTotal});
-        dataOut.push({name: i, data: aYearTotals});
+        dataOut.push({name: iterateYear, data: aYearTotals});
       }
 
       state.ticketsYearMonth = dataOut;
@@ -271,23 +278,21 @@ export default new Vuex.Store({
       ];
       gigTypes.reverse();
       let dataOut = [];
-      const dTo = new Date(state.tickets[0].date);
-      const dFrom = new Date(state.tickets[state.tickets.length -1].date);
 
-      gigTypes.map(function(gigType) {
+      gigTypes.map(function(iterateGigType) {
         let aTypeTotals = [];
         let typeTotal = 0;
-        for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
-          let events = state.tickets.filter(t => {
-            var [tYear] = t.date.split('-');
-            let filterList = filterByGigtype(t.gigtype, gigType);
-            return (filterList.length > 0) && (i == tYear);
+        for (var iterateYear=state.yearFrom; iterateYear <= state.yearTo; iterateYear++) {
+          let events = state.tickets.filter(iterateTicket => {
+            var [tYear] = iterateTicket.date.split('-');
+            let filterList = filterByGigtype(iterateTicket.gigtype, iterateGigType);
+            return (filterList.length > 0) && (iterateYear == tYear);
           });
-          aTypeTotals.push({x: i, y: events.length});
+          aTypeTotals.push({x: iterateYear, y: events.length});
           typeTotal+= events.length;
         }
         aTypeTotals.push({x: 'Total', y: typeTotal});
-        dataOut.push({name: gigType, data: aTypeTotals});
+        dataOut.push({name: iterateGigType, data: aTypeTotals});
       });
 
       state.ticketsTypeYear = dataOut;
@@ -295,18 +300,14 @@ export default new Vuex.Store({
     },
     getYearMonthTotals: (state) => {
       let dataOut = [];
-      const aMonths = Array.from({length: 12}, (v, k) => k+1); 
-      const dTo = new Date(state.tickets[0].date);
-      const dFrom = new Date(state.tickets[state.tickets.length -1].date);
-      const mthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-      for (var i=dFrom.getFullYear(); i <= dTo.getFullYear(); i++) {
+      for (var iterateYear=state.yearFrom; iterateYear <= state.yearTo; iterateYear++) {
         let aYearTotals = [];
         let yearTotal = 0;
-        aMonths.map(function(item) {
-          let events = state.tickets.filter(t => {
-            var [tYear, tMonth] = t.date.split('-');
-            return (item === +tMonth) && (i == tYear);
+        state.aMonths.map(function(iterateMonth) {
+          let events = state.tickets.filter(iterateTicket => {
+            var [tYear, tMonth] = iterateTicket.date.split('-');
+            return (iterateMonth === +tMonth) && (iterateYear == tYear);
           });
 
           let sum = events.reduce(function(prev, cur) {
@@ -315,11 +316,11 @@ export default new Vuex.Store({
 
           sum = sum || 0;
 
-          aYearTotals.push({x: mthLabels[item-1], y: Number(sum).round(2).toFixed(2)});
+          aYearTotals.push({x: state.aMonthNames[iterateMonth-1], y: Number(sum).round(2).toFixed(2)});
           yearTotal+= Number(sum).round(2);
         });
         aYearTotals.push({x: 'Total', y: Number(yearTotal).round(2).toFixed(2)});
-        dataOut.push({name: i, data: aYearTotals});
+        dataOut.push({name: iterateYear, data: aYearTotals});
       }
 
       state.ticketsYearMonth = dataOut;
