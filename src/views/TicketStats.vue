@@ -1,14 +1,14 @@
 <template>
     <div>
         <div id="yearmonth-chart">
-            <VueApexCharts type="heatmap" height="350" :options="ymChartOptions" :series="getYearMonthCount"></VueApexCharts>
+            <VueApexCharts type="heatmap" height="350" :options="ymChartOptions" :series="yearMonthStats"></VueApexCharts>
         </div>
         <div id="genreyear-chart">
-            <VueApexCharts type="heatmap" height="350" :options="gyChartOptions" :series="getYearTypeCount"></VueApexCharts>
+            <VueApexCharts type="heatmap" height="350" :options="gyChartOptions" :series="genreYearStats"></VueApexCharts>
         </div>
-        <div id="yearmonthtot-chart">
+        <!-- <div id="yearmonthtot-chart">
             <VueApexCharts type="heatmap" height="350" :options="ymTotChartOptions" :series="getYearMonthTotals"></VueApexCharts>
-        </div>
+        </div> -->
     </div>
 </template>
 
