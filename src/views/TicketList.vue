@@ -43,11 +43,9 @@ export default {
   created() {
     if (!this.getTicketsTotal) {
       this.$store.dispatch("fetchTicketData").then(() => {
-        console.log('Yay!');
         this.loadingState = false;
       })
       .catch((err) => {
-        console.log('Balls :(');
         console.log(err);
       });
     } else {
