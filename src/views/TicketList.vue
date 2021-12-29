@@ -1,7 +1,12 @@
 <template>
   <div>
     <h1>Ticket Listing</h1>
-    <ScaleLoader v-if="this.loading" color="orange" />
+    <semipolar-spinner
+      v-if="this.loading"
+      :animation-duration="2000"      
+      :size="255"
+      :color="'orange'"
+    />
     <div v-else>
       <div class="filterlist">
         <div v-if="this.filters.length > 0" class="clear">
@@ -33,15 +38,15 @@
 
 <script>
 import TicketSummary from "@/components/TicketSummary.vue";
-import { ScaleLoader } from "@saeris/vue-spinners";
 import { mapState, mapGetters } from "vuex";
 import Modal from "@/components/Modal.vue";
+import {SemipolarSpinner} from 'epic-spinners'
 
 export default {
   name: "ticket-list",
   components: {
     TicketSummary,
-    ScaleLoader,
+    SemipolarSpinner,
     Modal,
   },
   data() {

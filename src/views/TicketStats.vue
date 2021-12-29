@@ -1,6 +1,11 @@
 <template>
     <div>
-      <ScaleLoader v-if="this.loading" color="orange" />
+      <semipolar-spinner
+        v-if="this.loading"
+        :animation-duration="2000"      
+        :size="255"
+        :color="'orange'"
+      />
       <div v-else>
           <div id="yearmonth-chart">
               <VueApexCharts type="heatmap" height="350" :options="ymChartOptions" :series="yearMonthStats"></VueApexCharts>
@@ -21,13 +26,13 @@ import VueApexCharts from "vue-apexcharts";
 import ymChartOptions from "@/views/ymChartOptions" 
 import ymTotChartOptions from "@/views/ymTotChartOptions" 
 import gyChartOptions from "@/views/gyChartOptions" 
-import { ScaleLoader } from "@saeris/vue-spinners";
+import {SemipolarSpinner} from 'epic-spinners'
 
 export default {
   name: "ticket-stats",
   components: {
     VueApexCharts,
-    ScaleLoader
+    SemipolarSpinner
   },
   data() {
       return { 
