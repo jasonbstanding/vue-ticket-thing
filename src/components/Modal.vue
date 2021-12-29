@@ -5,24 +5,24 @@
         <div class="modal-container">
 
           <div class="modal-header">
+            <button class="modal-default-button" @click="$emit('modalClose')">
+              X
+            </button>
             <slot name="header">
-              <div>{{ ticket.date }}</div>
-              <div>{{ ticket.artist[0].name }}</div>
+              <div>{{ ticketHeading }}</div>
+              <div v-if="ticketVenue">{{ ticketVenue }}</div>
             </slot>
           </div>
 
           <div class="modal-body">
             <slot name="body">
-              <div>{{ ticket.title }}</div>
+              <div class="gigtitle" v-if="gigTitle">{{ gigTitle }}</div>
               <div v-if="ticket.image_lg"><img class="ticketimage" :src="ticket.image_lg" /></div>
             </slot>
           </div>
 
           <div class="modal-footer">
             <slot name="footer">
-              <button class="modal-default-button" @click="$emit('modalClose')">
-                OK
-              </button>
             </slot>
           </div>
         </div>
@@ -35,6 +35,35 @@
 export default {
   props: {
     ticket: Object
+  },
+  computed: {
+    ticketArtist() {
+      return (this.ticket.artist?.count > 0 ? this.ticket.artist[0].name : '');
+    },
+    ticketHeading() {
+      let arrHead = [];
+      console.log(this.ticket);
+      if (this.ticket.date) {
+        arrHead.push(this.ticket.date);
+      }
+      if (this.ticket.artist != null) {
+        arrHead.push(this.ticket.artist[0].name);
+      }
+      if (this.ticket.price) {
+        arrHead.push('£' + this.ticket.price);
+      }
+
+      return arrHead.join(' - ');
+    },
+    ticketVenue() {
+      return (this.ticket.venue != null ? this.ticket.venue[0].name : null);
+    },
+    gigTitle() {
+      if (!this.ticket.artist || (this.ticket.title != this.ticket.artist[0].name)) {
+        return this.ticket.title;
+      }
+      return null;
+    }
   }
 }
 </script>
@@ -67,10 +96,13 @@ export default {
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   font-family: Helvetica, Arial, sans-serif;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
 }
 
 .ticketimage {
-  width: 90%
+  width: 90%;
+  padding-top: 1em;
 }
 
 .modal-header h3 {
@@ -83,8 +115,13 @@ export default {
 }
 
 .modal-default-button {
-  display: block;
-  margin-top: 1rem;
+  display: inline;
+  float: left;
+}
+
+.gigtitle {
+  font-size: 2em;
+  font-weight: bolder;
 }
 
 /*
