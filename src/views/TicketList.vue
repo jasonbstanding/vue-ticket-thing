@@ -48,17 +48,28 @@ export default {
     return {
       filters: [],
       showModal: false,
-      selectedTicket: {}
+      selectedTicket: {},
+      loadingState: true
     };
   },
   created() {
     if (!this.getTicketsTotal) {
-      this.$store.dispatch("fetchTickets");
+      this.$store.dispatch("fetchTicketData").then(() => {
+        this.loadingState = false;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    } else {
+      this.loadingState = false;
     }
   },
   computed: {
     ...mapState(["tickets", "ticket", "loading", "filteredTickets"]),
     ...mapGetters(["getTicketsTotal", "getTicketsByGigType"]),
+    loading() {
+      return this.loadingState;
+    }
   },
   methods: {
     filterList(filter) {

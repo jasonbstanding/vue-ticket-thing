@@ -11,7 +11,14 @@ const apiClient = axios.create({
 
 export default {
   getTickets() {
-    return apiClient.get("/tickets");
+    return new Promise((resolve, reject) => {
+      apiClient.get("/tickets").then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject(err);
+      })
+    });
   },
   // getTicket(id) {
   //   return apiClient.get("/tickets/" + id);

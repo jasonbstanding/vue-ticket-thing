@@ -18,6 +18,13 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/TicketShow.vue"),
   },
+  {
+    path: "/stats",
+    name: "ticket-stats",
+    props: true,
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/TicketStats.vue"),
+  },
 ];
 
 const router = new VueRouter({

@@ -9,7 +9,8 @@
       >
     </div>
     <nav>
-      <router-link :to="{ name: 'ticket-list' }">Ticket List</router-link>
+      <router-link :to="{ name: 'ticket-list' }">Ticket List</router-link> |
+      <router-link :to="{ name: 'ticket-stats' }">Stats</router-link>
     </nav>
   </div>
 </template>
