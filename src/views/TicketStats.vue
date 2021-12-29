@@ -2,6 +2,7 @@
     <div>
       <semipolar-spinner
         v-if="this.loading"
+        class="spinner"
         :animation-duration="2000"      
         :size="255"
         :color="'orange'"
@@ -77,5 +78,11 @@ export default {
 #yearmonth-chart, #genreyear-chart, #yearmonthtot-chart {
   max-width: 800px;
   margin: 55px auto;
+}
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>

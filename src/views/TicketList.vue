@@ -3,6 +3,7 @@
     <h1>Ticket Listing</h1>
     <semipolar-spinner
       v-if="this.loading"
+      class="spinner"
       :animation-duration="2000"      
       :size="255"
       :color="'orange'"
@@ -124,5 +125,11 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+}
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
