@@ -37,16 +37,29 @@ export default {
   data() {
     return {
       filters: [],
+      loadingState: true
     };
   },
   created() {
     if (!this.getTicketsTotal) {
-      this.$store.dispatch("fetchTickets");
+      this.$store.dispatch("fetchTicketData").then(() => {
+        console.log('Yay!');
+        this.loadingState = false;
+      })
+      .catch((err) => {
+        console.log('Balls :(');
+        console.log(err);
+      });
+    } else {
+      this.loadingState = false;
     }
   },
   computed: {
     ...mapState(["tickets", "ticket", "loading", "filteredTickets"]),
     ...mapGetters(["getTicketsTotal", "getTicketsByGigType"]),
+    loading() {
+      return this.loadingState;
+    }
   },
   methods: {
     filterList(filter) {

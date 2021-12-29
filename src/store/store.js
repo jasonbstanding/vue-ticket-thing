@@ -67,7 +67,6 @@ export default new Vuex.Store({
     ticketsTypeYear: [],
     ticketsTotal: 0,
     ticket: {},
-    loading: true,
     aMonths: Array.from({length: 12}, (v, k) => k+1),
     aMonthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     yearFrom: null,
@@ -78,9 +77,9 @@ export default new Vuex.Store({
     SET_TICKETS(state, tickets) {
       state.tickets = tickets;
     },
-    SET_DATES(state, tickets) {
-      const dTo = new Date(tickets[0].date);
-      const dFrom = new Date(tickets[tickets.length-1].date);
+    SET_DATES(state) {
+      const dTo = new Date(state.tickets[0].date);
+      const dFrom = new Date(state.tickets[state.tickets.length-1].date);
       state.yearFrom = dFrom.getFullYear();
       state.yearTo = dTo.getFullYear();
       state.aYears = Array.from({length: (parseInt(state.yearTo)-parseInt(state.yearFrom))+1}, (v, k) => k+parseInt(state.yearFrom));
@@ -93,18 +92,33 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    fetchTicketData({ commit, state }) {
+      return new Promise ((resolve) => {
+        console.log('Fetching');
+        TicketService.getTicketsProm()
+          .then((response) => {
+            console.log('Result');
+            console.log(response);
+            commit("SET_TICKETS", response.data);
+            state.filteredTickets = state.tickets;
+            commit("SET_DATES");
+            console.log('Dates set');
+            resolve();
+          })
+          .catch((error) => {
+            console.log("There was an error:", error.response);
+          });
+      })
+    },
     fetchTickets({ commit, state }) {
-      state.loading = true;
       TicketService.getTickets()
         .then((response) => {
           commit("SET_TICKETS", response.data);
           state.filteredTickets = state.tickets;
           commit("SET_DATES", response.data);
-          state.loading = false;
         })
         .catch((error) => {
           console.log("There was an error:", error.response);
-          state.loading = false;
         });
     },
     fetchTicket({ commit, getters }, id) {
@@ -148,9 +162,7 @@ export default new Vuex.Store({
       commit("SET_FILTERED_TICKETS", filteredTickets);
     },
     clearFilters({ commit, state }) {
-      this.loading = true;
       commit("SET_FILTERED_TICKETS", state.tickets);
-      this.loading = false;
     },
   },
   getters: {
@@ -163,6 +175,8 @@ export default new Vuex.Store({
       );
     },
     getTicketsTotal: (state) => {
+      console.log('GETTICKETTOTAL');
+      console.log(state.tickets.length);
       return state.tickets.length;
     },
     getYearMonthCount: (state) => {
@@ -301,11 +315,15 @@ export default new Vuex.Store({
       return state.ticketsTypeYear; 
     },
     getYearMonthTotals: (state) => {
+      // eslint-disable-next-line no-debugger
+      debugger;
       let dataOut = [];
-
+      console.log("Getter In");
+      console.log(state.aYears);
       state.aYears.map(iterateYear => {
         let aYearTotals = [];
         let yearTotal = 0;
+
         state.aMonths.map(iterateMonth => {
           let events = state.tickets.filter(iterateTicket => {
             var [tYear, tMonth] = iterateTicket.date.split('-');
@@ -318,13 +336,17 @@ export default new Vuex.Store({
 
           sum = sum || 0;
 
+          console.log("inner:" +iterateYear+ "x:"+ state.aMonthNames[iterateMonth-1] +" y: "+Number(sum).round(2).toFixed(2));
           aYearTotals.push({x: state.aMonthNames[iterateMonth-1], y: Number(sum).round(2).toFixed(2)});
           yearTotal+= Number(sum).round(2);
         });
+
+        console.log("outer:" +iterateYear);
         aYearTotals.push({x: 'Total', y: Number(yearTotal).round(2).toFixed(2)});
         dataOut.push({name: iterateYear, data: aYearTotals});
       });
 
+      console.log("Getter Out");
       state.ticketsYearMonth = dataOut;
       return state.ticketsYearMonth;
     },
