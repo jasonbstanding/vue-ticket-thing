@@ -94,32 +94,17 @@ export default new Vuex.Store({
   actions: {
     fetchTicketData({ commit, state }) {
       return new Promise ((resolve) => {
-        console.log('Fetching');
-        TicketService.getTicketsProm()
+        TicketService.getTickets()
           .then((response) => {
-            console.log('Result');
-            console.log(response);
             commit("SET_TICKETS", response.data);
             state.filteredTickets = state.tickets;
             commit("SET_DATES");
-            console.log('Dates set');
             resolve();
           })
           .catch((error) => {
             console.log("There was an error:", error.response);
           });
       })
-    },
-    fetchTickets({ commit, state }) {
-      TicketService.getTickets()
-        .then((response) => {
-          commit("SET_TICKETS", response.data);
-          state.filteredTickets = state.tickets;
-          commit("SET_DATES", response.data);
-        })
-        .catch((error) => {
-          console.log("There was an error:", error.response);
-        });
     },
     fetchTicket({ commit, getters }, id) {
       var ticket = getters.getTicketById(id);
@@ -175,8 +160,6 @@ export default new Vuex.Store({
       );
     },
     getTicketsTotal: (state) => {
-      console.log('GETTICKETTOTAL');
-      console.log(state.tickets.length);
       return state.tickets.length;
     },
     getYearMonthCount: (state) => {
@@ -318,8 +301,6 @@ export default new Vuex.Store({
       // eslint-disable-next-line no-debugger
       debugger;
       let dataOut = [];
-      console.log("Getter In");
-      console.log(state.aYears);
       state.aYears.map(iterateYear => {
         let aYearTotals = [];
         let yearTotal = 0;
@@ -336,17 +317,14 @@ export default new Vuex.Store({
 
           sum = sum || 0;
 
-          console.log("inner:" +iterateYear+ "x:"+ state.aMonthNames[iterateMonth-1] +" y: "+Number(sum).round(2).toFixed(2));
           aYearTotals.push({x: state.aMonthNames[iterateMonth-1], y: Number(sum).round(2).toFixed(2)});
           yearTotal+= Number(sum).round(2);
         });
 
-        console.log("outer:" +iterateYear);
         aYearTotals.push({x: 'Total', y: Number(yearTotal).round(2).toFixed(2)});
         dataOut.push({name: iterateYear, data: aYearTotals});
       });
 
-      console.log("Getter Out");
       state.ticketsYearMonth = dataOut;
       return state.ticketsYearMonth;
     },
