@@ -288,8 +288,8 @@ export default new Vuex.Store({
         dataOut.push({name: iterateYear, data: aYearTotals});
       });
 
-      state.ticketsYearMonth = dataOut;
-      return state.ticketsYearMonth;
+      state.totalsYearMonth = dataOut;
+      return state.totalsYearMonth;
     },
   },
 });
