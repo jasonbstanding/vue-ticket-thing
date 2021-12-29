@@ -14,7 +14,7 @@
           <div class="modal-body">
             <slot name="body">
               <div>{{ ticket.title }}</div>
-              <div v-if="ticket.image_lg"><img :src="ticket.image_lg" /></div>
+              <div v-if="ticket.image_lg"><img class="ticketimage" :src="ticket.image_lg" /></div>
             </slot>
           </div>
 
@@ -58,13 +58,19 @@ export default {
 }
 
 .modal-container {
-  width: 300px;
-  margin: 0px auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   padding: 20px 30px;
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   font-family: Helvetica, Arial, sans-serif;
+}
+
+.ticketimage {
+  width: 90%
 }
 
 .modal-header h3 {
