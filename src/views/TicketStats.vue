@@ -50,20 +50,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(["tickets", "ticket", "loading", "filteredTickets", "ticketsYearMonth"]),
+    ...mapState(["tickets", "ticket", "loading", "filteredTickets", "totalsYearMonth"]),
     ...mapGetters(["getYearMonthCount", "getTicketsTotal", "getYearTypeCount", "getYearMonthTotals"]),
     yearMonthStats: function() {
-        return this.getYearMonthCount;
+      return this.getYearMonthCount;
     }, 
     genreYearStats: function() {
-        return this.getYearTypeCount;
+      return this.getYearTypeCount;
     },
     yearMonthTotals: function() {
-        if (this.ticketsYearMonth.count == 0) {
-          return this.getYearMonthTotals;
-        } else {
-          return this.ticketsYearMonth;
-        }
+      return this.getYearMonthTotals;
     },
     loading() {
       return this.loadingState;
