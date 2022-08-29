@@ -39,3 +39,9 @@ npm run build
 ...commit changes...
 git subtree push --prefix dist origin gh-pages
 ```
+
+More at https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+
+## TODO
+
+https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages
