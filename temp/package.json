@@ -1,0 +1,23 @@
+{
+  "name": "ticket-thing",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vue-cli-service serve"
+  },
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.2.29",
+    "axios": "^1.6.8",
+    "vue": "^3.4.21",
+    "vue-masonry-css": "^1.0.3",
+    "vue3-modal-dialogs": "^4.0.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.2.8"
+  }
+}
