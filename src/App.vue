@@ -4,8 +4,13 @@
       <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
     </header>
     <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
-    <GigList :gigs="filteredGigs" @sort="sortGigs" @select-gig="selectGig" />
-    <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
+    <div v-if="loading" class="spinner-container">
+      <Spinner />
+    </div>
+    <div v-else>
+      <GigList :gigs="filteredGigs" @select-gig="selectGig" />
+      <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
+    </div>
   </div>
 </template>
 
@@ -16,6 +21,7 @@ import FiltersComponent from './components/FiltersComponent.vue';
 import BreadcrumbsComponent from './components/BreadcrumbsComponent.vue';
 import GigList from './views/GigList.vue';
 import ModalComponent from './components/ModalComponent.vue';
+import Spinner from './components/SpinnerComponent.vue'; // Import the spinner component
 
 export default {
   name: 'App',
@@ -23,7 +29,8 @@ export default {
     FiltersComponent,
     BreadcrumbsComponent,
     GigList,
-    ModalComponent
+    ModalComponent,
+    Spinner // Register the spinner component
   },
   data() {
     return {
@@ -34,7 +41,8 @@ export default {
         gigtype: null,
         date: null
       },
-      selectedGig: null
+      selectedGig: null,
+      loading: false // Initialize the loading state
     };
   },
   computed: {
@@ -54,14 +62,17 @@ export default {
     }
   },
   methods: {
-    fetchGigs() {
-      axios.get(config.apiEndpoint)
-        .then(response => {
-          this.gigs = response.data;
-        })
-        .catch(error => {
-          console.error(error);
-        });
+    async fetchGigs() {
+      this.loading = true; // Set loading to true before the API call
+      try {
+        const response = await axios.get(config.apiEndpoint);
+        console.log('Fetched gigs data:', response.data);
+        this.gigs = response.data;
+      } catch (error) {
+        console.error('Error fetching gigs data:', error);
+      } finally {
+        this.loading = false; // Set loading to false after the response is received
+      }
     },
     clearAllFilters() {
       this.filters = {
@@ -93,5 +104,11 @@ header {
   top: 0;
   background-color: white;
   z-index: 1000;
+}
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 </style>
