@@ -5,30 +5,25 @@
         <button @click="sort('artist', 'desc')">Sort Artist Desc</button>
         <button @click="sort('date', 'asc')">Sort Date Asc</button>
         <button @click="sort('date', 'desc')">Sort Date Desc</button>
-      </div>x
-      <masonry
-        :cols="{ default: 4, 1100: 3, 700: 2, 500: 1 }"
-        gutter="20px"
-      >
+      </div>
+      <div class="grid-container">
         <GigBox
           v-for="gig in sortedGigs"
           :key="gig.id"
           :gig="gig"
           @click="selectGig(gig)"
         />
-      </masonry>
+      </div>
     </div>
   </template>
   
   <script>
   import { ref, computed } from 'vue';
-  import Masonry from 'vue-masonry-css';
   import GigBox from '../components/GigBox.vue';
   
   export default {
     name: 'GigList',
     components: {
-      Masonry,
       GigBox
     },
     props: {
@@ -70,6 +65,8 @@
         emit('select-gig', gig);
       };
   
+      console.log('Sorted Gigs:', sortedGigs.value);
+  
       return {
         sortedGigs,
         sort,
@@ -85,6 +82,12 @@
     justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
   }
   </style>
   
