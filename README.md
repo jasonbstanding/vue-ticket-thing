@@ -1,4 +1,4 @@
-# my-project
+# ticket-thing
 
 ## Project setup
 ```
