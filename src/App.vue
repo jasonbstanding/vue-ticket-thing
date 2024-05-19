@@ -5,7 +5,7 @@
     </header>
     <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
     <div v-if="loading" class="spinner-container">
-      <Spinner />
+      <SpinnerComponent />
     </div>
     <div v-else>
       <GigList :gigs="filteredGigs" @select-gig="selectGig" />
@@ -21,7 +21,7 @@ import FiltersComponent from './components/FiltersComponent.vue';
 import BreadcrumbsComponent from './components/BreadcrumbsComponent.vue';
 import GigList from './views/GigList.vue';
 import ModalComponent from './components/ModalComponent.vue';
-import Spinner from './components/Spinner.vue';
+import SpinnerComponent from './components/SpinnerComponent.vue';
 
 export default {
   name: 'App',
@@ -30,7 +30,7 @@ export default {
     BreadcrumbsComponent,
     GigList,
     ModalComponent,
-    Spinner
+    SpinnerComponent
   },
   data() {
     return {
