@@ -21,7 +21,7 @@ import FiltersComponent from './components/FiltersComponent.vue';
 import BreadcrumbsComponent from './components/BreadcrumbsComponent.vue';
 import GigList from './views/GigList.vue';
 import ModalComponent from './components/ModalComponent.vue';
-import Spinner from './components/SpinnerComponent.vue'; // Import the spinner component
+import Spinner from './components/Spinner.vue';
 
 export default {
   name: 'App',
@@ -30,7 +30,7 @@ export default {
     BreadcrumbsComponent,
     GigList,
     ModalComponent,
-    Spinner // Register the spinner component
+    Spinner
   },
   data() {
     return {
@@ -42,7 +42,7 @@ export default {
         date: null
       },
       selectedGig: null,
-      loading: false // Initialize the loading state
+      loading: false
     };
   },
   computed: {
@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     async fetchGigs() {
-      this.loading = true; // Set loading to true before the API call
+      this.loading = true;
       try {
         const response = await axios.get(config.apiEndpoint);
         console.log('Fetched gigs data:', response.data);
@@ -71,7 +71,7 @@ export default {
       } catch (error) {
         console.error('Error fetching gigs data:', error);
       } finally {
-        this.loading = false; // Set loading to false after the response is received
+        this.loading = false;
       }
     },
     clearAllFilters() {
