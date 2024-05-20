@@ -21,7 +21,7 @@ import FiltersComponent from './components/FiltersComponent.vue';
 import BreadcrumbsComponent from './components/BreadcrumbsComponent.vue';
 import GigList from './views/GigList.vue';
 import ModalComponent from './components/ModalComponent.vue';
-import Spinner from './components/Spinner.vue';
+import Spinner from './components/SpinnerComponent.vue';
 
 export default {
   name: 'App',
