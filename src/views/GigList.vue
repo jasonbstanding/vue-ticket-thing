@@ -65,8 +65,6 @@
         emit('select-gig', gig);
       };
   
-      console.log('Sorted Gigs:', sortedGigs.value);
-  
       return {
         sortedGigs,
         sort,
