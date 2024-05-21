@@ -12,6 +12,7 @@
           :key="gig.id"
           :gig="gig"
           @click="selectGig(gig)"
+          @filter="applyFilter"
         />
       </div>
     </div>
@@ -65,10 +66,15 @@
         emit('select-gig', gig);
       };
   
+      const applyFilter = (filter) => {
+        emit('apply-filter', filter);
+      };
+  
       return {
         sortedGigs,
         sort,
-        selectGig
+        selectGig,
+        applyFilter
       };
     }
   };

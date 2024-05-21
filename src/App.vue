@@ -8,7 +8,7 @@
       <Spinner />
     </div>
     <div v-else>
-      <GigList :gigs="filteredGigs" @select-gig="selectGig" />
+      <GigList :gigs="filteredGigs" @select-gig="selectGig" @apply-filter="applyFilter" />
       <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
     </div>
   </div>
@@ -48,16 +48,20 @@ export default {
   computed: {
     filteredGigs() {
       let filtered = this.gigs;
+
       for (const [key, value] of Object.entries(this.filters)) {
         if (value) {
           filtered = filtered.filter(gig => {
             if (key === 'date') {
               return gig.date.startsWith(value);
+            } else if (Array.isArray(gig[key])) {
+              return gig[key].some(item => item.name === value);
             }
-            return gig[key]?.some(item => item.name === value);
+            return false;
           });
         }
       }
+
       return filtered;
     }
   },
@@ -83,6 +87,9 @@ export default {
     },
     removeFilter(key) {
       this.filters[key] = null;
+    },
+    applyFilter(filter) {
+      this.filters[filter.type] = filter.value;
     },
     selectGig(gig) {
       this.selectedGig = gig;
