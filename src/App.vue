@@ -16,7 +16,6 @@
 
 <script>
 import axios from 'axios';
-import config from './config';
 import FiltersComponent from './components/FiltersComponent.vue';
 import BreadcrumbsComponent from './components/BreadcrumbsComponent.vue';
 import GigList from './views/GigList.vue';
@@ -69,7 +68,7 @@ export default {
     async fetchGigs() {
       this.loading = true;
       try {
-        const response = await axios.get(config.apiEndpoint);
+        const response = await axios.get(process.env.VUE_APP_API_ENDPOINT);
         this.gigs = response.data;
       } catch (error) {
         console.error('Error fetching gigs data:', error);
