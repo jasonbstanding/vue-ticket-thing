@@ -2,13 +2,13 @@
   <div id="app">
     <header>
       <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
+      <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
     </header>
-    <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
     <div v-if="loading" class="spinner-container">
       <Spinner />
     </div>
     <div v-else>
-      <GigList :gigs="filteredGigs" @select-gig="selectGig" />
+      <GigList :gigs="filteredGigs" @select-gig="selectGig" @apply-filter="applyFilter" />
       <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
     </div>
   </div>
@@ -21,7 +21,7 @@ import FiltersComponent from './components/FiltersComponent.vue';
 import BreadcrumbsComponent from './components/BreadcrumbsComponent.vue';
 import GigList from './views/GigList.vue';
 import ModalComponent from './components/ModalComponent.vue';
-import Spinner from './components/SpinnerComponent.vue'; // Import the spinner component
+import Spinner from './components/SpinnerComponent.vue';
 
 export default {
   name: 'App',
@@ -30,7 +30,7 @@ export default {
     BreadcrumbsComponent,
     GigList,
     ModalComponent,
-    Spinner // Register the spinner component
+    Spinner
   },
   data() {
     return {
@@ -42,36 +42,39 @@ export default {
         date: null
       },
       selectedGig: null,
-      loading: false // Initialize the loading state
+      loading: false
     };
   },
   computed: {
     filteredGigs() {
       let filtered = this.gigs;
+
       for (const [key, value] of Object.entries(this.filters)) {
         if (value) {
           filtered = filtered.filter(gig => {
             if (key === 'date') {
               return gig.date.startsWith(value);
+            } else if (Array.isArray(gig[key])) {
+              return gig[key].some(item => item.name === value);
             }
-            return gig[key]?.some(item => item.name === value);
+            return false;
           });
         }
       }
+
       return filtered;
     }
   },
   methods: {
     async fetchGigs() {
-      this.loading = true; // Set loading to true before the API call
+      this.loading = true;
       try {
         const response = await axios.get(config.apiEndpoint);
-        console.log('Fetched gigs data:', response.data);
         this.gigs = response.data;
       } catch (error) {
         console.error('Error fetching gigs data:', error);
       } finally {
-        this.loading = false; // Set loading to false after the response is received
+        this.loading = false;
       }
     },
     clearAllFilters() {
@@ -84,6 +87,9 @@ export default {
     },
     removeFilter(key) {
       this.filters[key] = null;
+    },
+    applyFilter(filter) {
+      this.filters[filter.type] = filter.value;
     },
     selectGig(gig) {
       this.selectedGig = gig;
