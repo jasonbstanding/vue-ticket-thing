@@ -4,7 +4,6 @@
       {{ filter.key }}: {{ filter.value }}
       <button @click="$emit('remove-filter', filter.key)">x</button>
     </span>
-    <button v-if="activeFilters.length" @click="$emit('clear-all')">Clear All</button>
   </div>
 </template>
 

@@ -2,8 +2,8 @@
   <div id="app">
     <header>
       <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
+      <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
     </header>
-    <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
     <div v-if="loading" class="spinner-container">
       <Spinner />
     </div>
