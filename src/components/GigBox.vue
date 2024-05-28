@@ -1,10 +1,10 @@
 <template>
     <div class="gig-box">
       <div class="gigtype" @click="filterBy('gigtype')">{{ gig.gigtype[0]?.name }}</div>
-      <img :src="gig.image_sml" alt="Gig Image" @click="showDetails" />
-      <h3 @click="filterBy('title')">{{ gig.title }}</h3>
+      <img :src="gig.image_sml" alt="Gig Image" @click="selectGig(gig)">
+      <h2 @click="selectGig(gig)">{{ gig.title }}</h2>
       <p @click="filterBy('date')">{{ gig.date }}</p>
-      <p @click="filterBy('price')">{{ gig.price > 0 ? `£${gig.price}` : 'Free' }}</p>
+      <p>{{ gig.price > 0 ? `£${gig.price}` : 'Free' }}</p>
       <p v-if="gig.artist" @click="filterBy('artist')" class="artist">{{ gig.artist[0]?.name }}</p>
       <p v-if="gig.venue" @click="filterBy('venue')">{{ gig.venue[0]?.name }}</p>
     </div>
@@ -26,6 +26,9 @@
       filterBy(type) {
         const value = type === 'date' ? this.gig.date.split('-')[0] : this.gig[type][0]?.name;
         this.$emit('filter', { type, value });
+      },
+      selectGig(gig) {
+        this.$emit('select-gig', gig);
       }
     }
   };
@@ -38,8 +41,9 @@
   }
   .gig-box img {
     width: 100%;
+    cursor: pointer;
   }
-  .gig-box h3, .gig-box p {
+  .gig-box h2, .gig-box p {
     cursor: pointer;
   }
   .gigtype {

@@ -11,8 +11,8 @@
           v-for="gig in sortedGigs"
           :key="gig.id"
           :gig="gig"
-          @click="selectGig(gig)"
           @filter="applyFilter"
+          @select-gig="$emit('select-gig',$event)"
         />
       </div>
     </div>
@@ -61,11 +61,7 @@
         sortKey.value = key;
         sortOrder.value = order;
       };
-  
-      const selectGig = (gig) => {
-        emit('select-gig', gig);
-      };
-  
+    
       const applyFilter = (filter) => {
         emit('apply-filter', filter);
       };
@@ -73,7 +69,6 @@
       return {
         sortedGigs,
         sort,
-        selectGig,
         applyFilter
       };
     }
