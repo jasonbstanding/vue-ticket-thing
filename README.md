@@ -17,6 +17,11 @@ This version was borne of a need to start from scratch as the Heroku hosting I h
 The Vue 3 version has barely any functionality, although I think works a lot nicer.  No local store is used, because I pulled my finger out and put
 some caching on the API layer (instead of hammering my WP site every time).
 
+It's probably worth owning up at this point - I got ChatGPT to write most of this code for me.  And by "most", I mean, well, "all".  Apart from
+fixing the bits that were OBVIOUSLY fucked.  Hard to say whether it saved me any time or not, or whether the timed saved was worth the sanity cost
+of asking it to write me a Vue 3 app, and then having to go back and tell it that any packages it uses must be compatible with Vue 3.  Getting the
+initial prompt right to build the bulk of the app took me 3 tries.
+
 *"gig ticket" is a broad church, taking in plays, films, festivals, tours, museums, and even a dog show. But not transport.  Got to draw a line somewhere.
 
 ### TODO
