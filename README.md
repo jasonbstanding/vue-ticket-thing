@@ -34,6 +34,7 @@ initial prompt right to build the bulk of the app took me 3 tries.
 - [ ] Maybe some dropdown menus with things in?
 - [ ] Deep linking to searches
 - [ ] Put a less shit spinner in
+- [ ] Sort by cost
 
 ## Project setup
 ```
