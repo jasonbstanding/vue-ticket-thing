@@ -28,7 +28,7 @@ initial prompt right to build the bulk of the app took me 3 tries.
 
 - [ ] Stats page using DS or something
 - [ ] Link back to blog
-- [ ] Google Analytics so I can empirically prove that nobody's looking at this
+- [x] Google Analytics so I can empirically prove that nobody's looking at this
 - [ ] Text search of data
 - [ ] Instructions on wtf to do with it
 - [ ] Maybe some dropdown menus with things in?
