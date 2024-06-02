@@ -1,29 +1,14 @@
 <template>
   <div id="app">
-    <header>
-      <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
-      <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
-    </header>
     <div v-if="loading" class="spinner-container">
       <Spinner />
     </div>
     <div v-else>
-      <div class="counts">
-        <h2>Artist Counts</h2>
-        <ul>
-          <li v-for="(count, artist) in artistCounts" :key="artist">{{ artist }}: {{ count }}</li>
-        </ul>
-
-        <h2>Venue Counts</h2>
-        <ul>
-          <li v-for="(count, venue) in venueCounts" :key="venue">{{ venue }}: {{ count }}</li>
-        </ul>
-
-        <h2>Year Counts</h2>
-        <ul>
-          <li v-for="(count, year) in yearCounts" :key="year">{{ year }}: {{ count }}</li>
-        </ul>
-      </div>      
+      <header>
+        <MenusComponent :artists="artistCounts" :venues="venueCounts" :years="yearCounts" @filter="applyFilter" />
+        <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
+        <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
+      </header>
       <GigList :gigs="filteredGigs" @select-gig="selectGig" @apply-filter="applyFilter" />
       <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
     </div>
@@ -33,16 +18,19 @@
 <script>
 import axios from 'axios';
 import FiltersComponent from './components/FiltersComponent.vue';
+import MenusComponent from './components/MenusComponent.vue';
 import BreadcrumbsComponent from './components/BreadcrumbsComponent.vue';
 import GigList from './views/GigList.vue';
 import ModalComponent from './components/ModalComponent.vue';
 import Spinner from './components/SpinnerComponent.vue';
+import '@coreui/coreui/dist/css/coreui.min.css';
 
 export default {
   name: 'App',
   components: {
     FiltersComponent,
     BreadcrumbsComponent,
+    MenusComponent,
     GigList,
     ModalComponent,
     Spinner
@@ -119,6 +107,7 @@ export default {
         }
       });
 
+      // Convert back to an array of objects if needed
       this.artistCounts = artistMap;
       this.venueCounts = venueMap;
       this.yearCounts = yearMap;
