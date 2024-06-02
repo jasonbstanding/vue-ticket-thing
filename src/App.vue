@@ -8,6 +8,22 @@
       <Spinner />
     </div>
     <div v-else>
+      <div class="counts">
+        <h2>Artist Counts</h2>
+        <ul>
+          <li v-for="(count, artist) in artistCounts" :key="artist">{{ artist }}: {{ count }}</li>
+        </ul>
+
+        <h2>Venue Counts</h2>
+        <ul>
+          <li v-for="(count, venue) in venueCounts" :key="venue">{{ venue }}: {{ count }}</li>
+        </ul>
+
+        <h2>Year Counts</h2>
+        <ul>
+          <li v-for="(count, year) in yearCounts" :key="year">{{ year }}: {{ count }}</li>
+        </ul>
+      </div>      
       <GigList :gigs="filteredGigs" @select-gig="selectGig" @apply-filter="applyFilter" />
       <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
     </div>
@@ -41,7 +57,10 @@ export default {
         date: null
       },
       selectedGig: null,
-      loading: false
+      loading: false,
+      artistCounts: {},
+      venueCounts: {},
+      yearCounts: {}
     };
   },
   computed: {
@@ -70,11 +89,39 @@ export default {
       try {
         const response = await axios.get(process.env.VUE_APP_API_ENDPOINT);
         this.gigs = response.data;
+        this.processCounts();
       } catch (error) {
         console.error('Error fetching gigs data:', error);
       } finally {
         this.loading = false;
       }
+    },
+    processCounts() {
+      const artistMap = {};
+      const venueMap = {};
+      const yearMap = {};
+
+      this.gigs.forEach(gig => {
+        // Count artists
+        if (gig.artist) {
+          artistMap[gig.artist[0].name] = (artistMap[gig.artist[0].name] || 0) + 1;
+        }
+
+        // Count venues
+        if (gig.venue) {
+          venueMap[gig.venue[0].name] = (venueMap[gig.venue[0].name] || 0) + 1;
+        }
+
+        // Count years
+        if (gig.date) {
+          const year = gig.date.split('-')[0]; // Extract year from date
+          yearMap[year] = (yearMap[year] || 0) + 1;
+        }
+      });
+
+      this.artistCounts = artistMap;
+      this.venueCounts = venueMap;
+      this.yearCounts = yearMap;
     },
     clearAllFilters() {
       this.filters = {
