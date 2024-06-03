@@ -31,9 +31,9 @@ initial prompt right to build the bulk of the app took me 3 tries.
 - [x] Google Analytics so I can empirically prove that nobody's looking at this
 - [ ] Text search of data
 - [ ] Instructions on wtf to do with it
-- [ ] Maybe some dropdown menus with things in?
+- [x] Maybe some dropdown menus with things in?
 - [ ] Deep linking to searches
-- [ ] Put a less shit spinner in
+- [x] Put a less shit spinner in
 - [ ] Sort by cost
 
 ## Project setup
