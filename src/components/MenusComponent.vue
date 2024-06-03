@@ -25,6 +25,9 @@
         <CDropdownItem  @click="setSort('freq')">Frequency desc.</CDropdownItem>
     </CDropdownMenu>
   </CDropdown>
+  <div class="titletext">
+    The Ticket Thing (powered by <a href="https://www.jasonbstanding.com">jasonbstanding.com</a>) 
+  </div>
 </template>
   
 <script>
@@ -36,7 +39,7 @@ export default {
         CDropdown,
         CDropdownItem,
         CDropdownToggle,
-        CDropdownMenu
+        CDropdownMenu,
     },
     props: {
         artists: Object,
@@ -120,4 +123,11 @@ export default {
 </script>
 
 <style scoped>
+.titletext a {
+    text-decoration:none;
+    color:orange;
+}
+.titletext a:hover {
+    text-decoration:underline;
+}
 </style>
