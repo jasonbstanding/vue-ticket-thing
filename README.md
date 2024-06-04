@@ -27,12 +27,12 @@ initial prompt right to build the bulk of the app took me 3 tries.
 ### TODO
 
 - [ ] Stats page using DS or something
-- [ ] Link back to blog
+- [x] Link back to blog
 - [x] Google Analytics so I can empirically prove that nobody's looking at this
 - [ ] Text search of data
 - [ ] Instructions on wtf to do with it
 - [x] Maybe some dropdown menus with things in?
-- [ ] Deep linking to searches
+- [x] Deep linking to searches
 - [x] Put a less shit spinner in
 - [ ] Sort by cost
 
