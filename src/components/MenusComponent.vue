@@ -18,6 +18,12 @@
     </CDropdownMenu>
   </CDropdown>
   <CDropdown>
+    <CDropdownToggle color="primary">Gig Types</CDropdownToggle>
+    <CDropdownMenu>
+        <CDropdownItem v-for="(count, type) in sortedTypes" :key="type" @click="filterBy('type', type)">{{ type }}: {{ count }}</CDropdownItem>
+    </CDropdownMenu>
+  </CDropdown>
+  <CDropdown>
     <CDropdownToggle color="primary">Sort Lists</CDropdownToggle>
     <CDropdownMenu>
         <CDropdownItem @click="setSort('asc')">A to Z</CDropdownItem>
@@ -44,7 +50,8 @@ export default {
     props: {
         artists: Object,
         venues: Object,
-        years: Object
+        years: Object,
+        types: Object
     },
     data() {
         return {
@@ -78,7 +85,16 @@ export default {
             years = this.sort2d(this.years);
         }
         return years;
-      }
+      },
+      sortedTypes() {
+        let types = {};
+        if (this.sortName == "asc" || this.sortName == "desc") {
+            types = this.asort(this.types, this.sortName);
+        } else {
+            types = this.sort2d(this.types);
+        }
+        return types;
+      },
     },
     methods: {
       filterBy(type, value) {

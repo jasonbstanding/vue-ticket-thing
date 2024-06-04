@@ -5,7 +5,7 @@
     </div>
     <div v-else>
       <header>
-        <MenusComponent :artists="artistCounts" :venues="venueCounts" :years="yearCounts" @filter="applyFilter" />
+        <MenusComponent :artists="artistCounts" :venues="venueCounts" :years="yearCounts" :types="typeCounts" @filter="applyFilter" />
         <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
         <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
       </header>
@@ -53,6 +53,7 @@ export default {
     const artistCounts = ref([]);
     const venueCounts = ref([]);
     const yearCounts = ref([]);
+    const typeCounts = ref([]);
 
     const items = Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`);
 
@@ -103,6 +104,11 @@ export default {
         if (gig.date) {
           const year = gig.date.split('-')[0]; // Extract year from date
           yearCounts.value[year] = (yearCounts.value[year] || 0) + 1;
+        }
+
+        // Count types
+        if (gig.gigtype) {
+          typeCounts.value[gig.gigtype[0].name] = (typeCounts.value[gig.gigtype[0].name] || 0) + 1;
         }
       });
     }
@@ -166,7 +172,8 @@ export default {
       items,
       artistCounts,
       venueCounts,
-      yearCounts
+      yearCounts,
+      typeCounts
     };
   }
 };
