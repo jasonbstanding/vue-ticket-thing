@@ -21,7 +21,7 @@
   <script>
   import { ref, computed } from 'vue';
   import GigBox from '../components/GigBox.vue';
-  
+
   export default {
     name: 'GigList',
     components: {
