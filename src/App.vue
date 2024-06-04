@@ -24,6 +24,7 @@ import GigList from './views/GigList.vue';
 import ModalComponent from './components/ModalComponent.vue';
 import Spinner from './components/SpinnerComponent.vue';
 import '@coreui/coreui/dist/css/coreui.min.css';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'App',
@@ -48,7 +49,7 @@ export default {
       loading: false,
       artistCounts: {},
       venueCounts: {},
-      yearCounts: {}
+      yearCounts: {},
     };
   },
   computed: {
@@ -122,17 +123,43 @@ export default {
     },
     removeFilter(key) {
       this.filters[key] = null;
+      this.setQuery();
     },
     applyFilter(filter) {
       this.filters[filter.type] = filter.value;
+      this.setQuery();
     },
     selectGig(gig) {
       this.selectedGig = gig;
+    },
+    setQuery() {
+      const query = {}
+      Object.entries(this.filters).forEach(([key, value]) => {
+          if (value) {
+              query[key] = value
+          }
+      })
+      this.$router.push({ query })
+    },
+    async readFilters() {
+      const route = useRoute();
+      if (route.query.artist) {
+        this.applyFilter({ type: "artist", value: route.query.artist});
+      }
+      if (route.query.venue) {
+        this.filters["venue"] = route.query.venue;
+      }
+      if (route.query.date) {
+        this.filters["date"] = route.query.date;
+      }
     }
   },
   created() {
     this.fetchGigs();
-  }
+  },
+  mounted() {
+    this.readFilters();
+  }  
 };
 </script>
 
