@@ -88,28 +88,19 @@ export default {
       }
     };
 
+    const incrementCount = (counts, key) => {
+      if (key) {
+        counts[key] = (counts[key] || 0) + 1;
+      }
+    };
+
     const processCounts = () => {
       gigs.value.forEach(gig => {
-        // Count artists
-        if (gig.artist) {
-          artistCounts.value[gig.artist[0].name] = (artistCounts.value[gig.artist[0].name] || 0) + 1;
-        }
-
-        // Count venues
-        if (gig.venue) {
-          venueCounts.value[gig.venue[0].name] = (venueCounts.value[gig.venue[0].name] || 0) + 1;
-        }
-
-        // Count years
-        if (gig.date) {
-          const year = gig.date.split('-')[0]; // Extract year from date
-          yearCounts.value[year] = (yearCounts.value[year] || 0) + 1;
-        }
-
-        // Count types
-        if (gig.gigtype) {
-          typeCounts.value[gig.gigtype[0].name] = (typeCounts.value[gig.gigtype[0].name] || 0) + 1;
-        }
+        incrementCount(artistCounts.value, gig.artist?.[0]?.name);
+        incrementCount(venueCounts.value, gig.venue?.[0]?.name);
+        const year = gig.date?.split('-')[0]; // Extract year from date
+        incrementCount(yearCounts.value, year);
+        incrementCount(typeCounts.value, gig.gigtype?.[0]?.name);
       });
     }
 

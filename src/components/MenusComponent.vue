@@ -60,40 +60,16 @@ export default {
     },
     computed: {
       sortedArtists() {
-        let artists = {};
-        if (this.sortName == "asc" || this.sortName == "desc") {
-            artists = this.asort(this.artists, this.sortName);
-        } else {
-            artists = this.sort2d(this.artists);
-        }
-        return artists;
+        return this.sortData(this.artists, this.sortName);
       },
       sortedVenues() {
-        let venues = {};
-        if (this.sortName == "asc" || this.sortName == "desc") {
-            venues = this.asort(this.venues, this.sortName);
-        } else {
-            venues = this.sort2d(this.venues);
-        }
-        return venues;
+        return this.sortData(this.venues, this.sortName);
       },
       sortedYears() {
-        let years = {};
-        if (this.sortName == "asc" || this.sortName == "desc") {
-            years = this.asort(this.years, this.sortName);
-        } else {
-            years = this.sort2d(this.years);
-        }
-        return years;
+        return this.sortData(this.years, this.sortName);
       },
       sortedTypes() {
-        let types = {};
-        if (this.sortName == "asc" || this.sortName == "desc") {
-            types = this.asort(this.types, this.sortName);
-        } else {
-            types = this.sort2d(this.types);
-        }
-        return types;
+        return this.sortData(this.types, this.sortName);
       },
     },
     methods: {
@@ -133,6 +109,13 @@ export default {
             entries.sort().reverse();
         }
         return Object.fromEntries(entries);
+      },
+      sortData(data, sortName) {
+        if (sortName == "asc" || sortName == "desc") {
+          return this.asort(data, sortName);
+        } else {
+          return this.sort2d(data);
+        }
       },
     }
 };
