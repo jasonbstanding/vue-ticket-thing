@@ -20,7 +20,7 @@
   <CDropdown>
     <CDropdownToggle color="primary">Gig Types</CDropdownToggle>
     <CDropdownMenu>
-        <CDropdownItem v-for="(count, type) in sortedTypes" :key="type" @click="filterBy('type', type)">{{ type }}: {{ count }}</CDropdownItem>
+        <CDropdownItem v-for="(count, gigtype) in sortedTypes" :key="gigtype" @click="filterBy('gigtype', gigtype)">{{ gigtype }}: {{ count }}</CDropdownItem>
     </CDropdownMenu>
   </CDropdown>
   <CDropdown>
