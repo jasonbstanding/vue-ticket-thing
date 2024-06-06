@@ -5,7 +5,7 @@
     </div>
     <div v-else>
       <header>
-        <MenusComponent :artists="artistCounts" :venues="venueCounts" :years="yearCounts" @filter="applyFilter" />
+        <MenusComponent :artists="artistCounts" :venues="venueCounts" :years="yearCounts" :types="typeCounts" @filter="applyFilter" />
         <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
         <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
       </header>
@@ -53,6 +53,7 @@ export default {
     const artistCounts = ref([]);
     const venueCounts = ref([]);
     const yearCounts = ref([]);
+    const typeCounts = ref([]);
 
     const items = Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`);
 
@@ -87,23 +88,19 @@ export default {
       }
     };
 
+    const incrementCount = (counts, key) => {
+      if (key) {
+        counts[key] = (counts[key] || 0) + 1;
+      }
+    };
+
     const processCounts = () => {
       gigs.value.forEach(gig => {
-        // Count artists
-        if (gig.artist) {
-          artistCounts.value[gig.artist[0].name] = (artistCounts.value[gig.artist[0].name] || 0) + 1;
-        }
-
-        // Count venues
-        if (gig.venue) {
-          venueCounts.value[gig.venue[0].name] = (venueCounts.value[gig.venue[0].name] || 0) + 1;
-        }
-
-        // Count years
-        if (gig.date) {
-          const year = gig.date.split('-')[0]; // Extract year from date
-          yearCounts.value[year] = (yearCounts.value[year] || 0) + 1;
-        }
+        incrementCount(artistCounts.value, gig.artist?.[0]?.name);
+        incrementCount(venueCounts.value, gig.venue?.[0]?.name);
+        const year = gig.date?.split('-')[0]; // Extract year from date
+        incrementCount(yearCounts.value, year);
+        incrementCount(typeCounts.value, gig.gigtype?.[0]?.name);
       });
     }
 
@@ -166,7 +163,8 @@ export default {
       items,
       artistCounts,
       venueCounts,
-      yearCounts
+      yearCounts,
+      typeCounts
     };
   }
 };
