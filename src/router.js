@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import GigList from './views/GigList.vue';
-import StatsPage from './views/Stats.vue';
+import GigList from '@/views/GigList.vue';
+import StatsPage from '@/views/Stats.vue';
 
 const routes = [
   {
