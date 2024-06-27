@@ -19,12 +19,12 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import FiltersComponent from './components/FiltersComponent.vue';
-import MenusComponent from './components/MenusComponent.vue';
-import BreadcrumbsComponent from './components/BreadcrumbsComponent.vue';
-import GigList from './views/GigList.vue';
-import ModalComponent from './components/ModalComponent.vue';
-import Spinner from './components/SpinnerComponent.vue';
+import FiltersComponent from '@/components/FiltersComponent.vue';
+import MenusComponent from '@/components/MenusComponent.vue';
+import BreadcrumbsComponent from '@/components/BreadcrumbsComponent.vue';
+import GigList from '@/views/GigList.vue';
+import ModalComponent from '@/components/ModalComponent.vue';
+import Spinner from '@/components/SpinnerComponent.vue';
 import '@coreui/coreui/dist/css/coreui.min.css';
 
 export default {
@@ -77,7 +77,7 @@ export default {
     const fetchGigs = async () => {
       loading.value = true;
       try {
-        const response = await axios.get(process.env.VUE_APP_API_ENDPOINT);
+        const response = await axios.get(import.meta.env.VITE_APP_API_ENDPOINT);
         gigs.value = response.data;
         processCounts();
         applyQueryParameters();
