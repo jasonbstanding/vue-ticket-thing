@@ -31,9 +31,6 @@
         <CDropdownItem  @click="setSort('freq')">Frequency desc.</CDropdownItem>
     </CDropdownMenu>
   </CDropdown>
-  <div class="titletext">
-    The Ticket Thing (powered by <a href="https://www.jasonbstanding.com">jasonbstanding.com</a>) | <router-link to="/stats">Stats</router-link>
-  </div>
 </template>
   
 <script>

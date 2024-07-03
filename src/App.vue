@@ -1,16 +1,10 @@
 <template>
   <div id="app">
+    <div class="titletext">
+      <router-link :to="{ name: 'GigList' }">The Ticket Thing</router-link> (powered by <a href="https://www.jasonbstanding.com">jasonbstanding.com</a>) | <router-link :to="{ name: 'StatsPage' }">Stats</router-link>
+    </div>
     <div v-if="loading" class="spinner-container">
       <Spinner />
-    </div>
-    <div v-else>
-      <header>
-        <MenusComponent :artists="artistCounts" :venues="venueCounts" :years="yearCounts" :types="typeCounts" @filter="applyFilter" />
-        <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
-        <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
-      </header>
-      <GigList :gigs="filteredGigs" @select-gig="selectGig" @apply-filter="applyFilter" />
-      <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
     </div>
   </div>
 </template>
@@ -19,22 +13,12 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import FiltersComponent from '@/components/FiltersComponent.vue';
-import MenusComponent from '@/components/MenusComponent.vue';
-import BreadcrumbsComponent from '@/components/BreadcrumbsComponent.vue';
-import GigList from '@/views/GigList.vue';
-import ModalComponent from '@/components/ModalComponent.vue';
 import Spinner from '@/components/SpinnerComponent.vue';
 import '@coreui/coreui/dist/css/coreui.min.css';
 
 export default {
   name: 'App',
   components: {
-    FiltersComponent,
-    BreadcrumbsComponent,
-    MenusComponent,
-    GigList,
-    ModalComponent,
     Spinner
   },
   setup() {

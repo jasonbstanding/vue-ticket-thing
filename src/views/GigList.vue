@@ -1,4 +1,11 @@
 <template>
+    <header>
+      <MenusComponent :artists="artistCounts" :venues="venueCounts" :years="yearCounts" :types="typeCounts" @filter="applyFilter" />
+      <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
+      <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
+    </header>
+    <GigList :gigs="filteredGigs" @select-gig="selectGig" @apply-filter="applyFilter" />
+    <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
     <div>
       <div class="sort-options">
         <button @click="sort('artist', 'asc')">Sort Artist Asc</button>
@@ -20,12 +27,22 @@
   
   <script>
   import { ref, computed } from 'vue';
-  import GigBox from '../components/GigBox.vue';
+  import GigBox from '@/components/GigBox.vue';
+  import FiltersComponent from '@/components/FiltersComponent.vue';
+  import MenusComponent from '@/components/MenusComponent.vue';
+  import BreadcrumbsComponent from '@/components/BreadcrumbsComponent.vue';
+  import GigList from '@/views/GigList.vue';
+  import ModalComponent from '@/components/ModalComponent.vue';
 
   export default {
     name: 'GigList',
     components: {
-      GigBox
+      GigBox,
+      FiltersComponent,
+      BreadcrumbsComponent,
+      MenusComponent,
+      GigList,
+      ModalComponent
     },
     props: {
       gigs: {
