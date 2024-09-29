@@ -12,7 +12,7 @@
     "@coreui/coreui": "^5.0.2",
     "@coreui/vue": "^5.1.0",
     "@vueuse/core": "^10.9.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.4",
     "epic-spinners": "^2.0.0",
     "vue": "^3.2.13",
     "vue-gtag": "^2.0.1",
