@@ -77,7 +77,6 @@ function dotsForCell(byType) {
 </script>
 
 <template>
-  <!-- overflow-y: clip lets sticky children look up to the viewport for scroll context -->
   <div class="heatmap-wrap" @mousemove="onMouseMove">
     <div class="grid">
 
@@ -176,8 +175,6 @@ function dotsForCell(byType) {
 
 <style scoped>
 .heatmap-wrap {
-  overflow-x: auto;
-  overflow-y: clip; /* doesn't create a scroll container — sticky children stick to viewport */
   padding-bottom: 8px;
 }
 
