@@ -1,188 +1,134 @@
+<script setup>
+import { RouterLink, RouterView } from 'vue-router'
+import { useTicketsStore } from './stores/tickets.js'
+import AppSpinner from './components/AppSpinner.vue'
+
+const store = useTicketsStore()
+
+const navItems = [
+  { to: '/gigs',    label: 'Gigs' },
+  { to: '/heatmap', label: 'Heatmap' },
+  { to: '/spend',   label: 'Spend' },
+]
+</script>
+
 <template>
-  <div id="app">
-    <div v-if="loading" class="spinner-container">
-      <Spinner />
-    </div>
-    <div v-else>
-      <header>
-        <MenusComponent :artists="artistCounts" :venues="venueCounts" :years="yearCounts" :types="typeCounts" @filter="applyFilter" />
-        <FiltersComponent :filters="filters" @clear-all="clearAllFilters" />
-        <BreadcrumbsComponent :filters="filters" @remove-filter="removeFilter" />
-      </header>
-      <GigList :gigs="filteredGigs" @select-gig="selectGig" @apply-filter="applyFilter" />
-      <ModalComponent v-if="selectedGig" :gig="selectedGig" @close="selectedGig = null" />
-    </div>
+  <div id="layout">
+    <nav class="navbar">
+      <div class="brand-group">
+        <span class="brand">The Ticket Thing</span>
+        <span class="brand-sub">Powered by <a href="https://www.jasonbstanding.com" target="_blank" rel="noopener">jasonbstanding.com</a></span>
+      </div>
+      <div class="nav-links">
+        <RouterLink
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          class="nav-link"
+          active-class="nav-link--active"
+        >
+          {{ item.label }}
+        </RouterLink>
+      </div>
+    </nav>
+
+    <main class="page-content">
+      <RouterView />
+    </main>
+
+    <!-- Global loading overlay -->
+    <Teleport to="body">
+      <div v-if="store.loading" class="loading-overlay">
+        <AppSpinner />
+      </div>
+    </Teleport>
   </div>
 </template>
 
-<script>
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
-import FiltersComponent from '@/components/FiltersComponent.vue';
-import MenusComponent from '@/components/MenusComponent.vue';
-import BreadcrumbsComponent from '@/components/BreadcrumbsComponent.vue';
-import GigList from '@/views/GigList.vue';
-import ModalComponent from '@/components/ModalComponent.vue';
-import Spinner from '@/components/SpinnerComponent.vue';
-import '@coreui/coreui/dist/css/coreui.min.css';
-
-export default {
-  name: 'App',
-  components: {
-    FiltersComponent,
-    BreadcrumbsComponent,
-    MenusComponent,
-    GigList,
-    ModalComponent,
-    Spinner
-  },
-  setup() {
-    const route = useRoute();
-    const router = useRouter();
-
-    const gigs = ref([]);
-    const filters = ref({
-      artist: null,
-      venue: null,
-      gigtype: null,
-      date: null
-    });
-    const selectedGig = ref(null);
-    const loading = ref(false);
-    const artistCounts = ref([]);
-    const venueCounts = ref([]);
-    const yearCounts = ref([]);
-    const typeCounts = ref([]);
-
-    const items = Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`);
-
-    const filteredGigs = computed(() => {
-      let filtered = gigs.value;
-      for (const [key, value] of Object.entries(filters.value)) {
-        if (value) {
-          filtered = filtered.filter(gig => {
-            if (key === 'date') {
-              return gig.date.startsWith(value);
-            } else if (Array.isArray(gig[key])) {
-              return gig[key].some(item => item.name === value);
-            }
-            return false;
-          });
-        }
-      }
-      return filtered;
-    });
-
-    const fetchGigs = async () => {
-      loading.value = true;
-      try {
-        const response = await axios.get(import.meta.env.VITE_APP_API_ENDPOINT);
-        gigs.value = response.data;
-        processCounts();
-        applyQueryParameters();
-      } catch (error) {
-        console.error('Error fetching gigs data:', error);
-      } finally {
-        loading.value = false;
-      }
-    };
-
-    const incrementCount = (counts, key) => {
-      if (key) {
-        counts[key] = (counts[key] || 0) + 1;
-      }
-    };
-
-    const processCounts = () => {
-      gigs.value.forEach(gig => {
-        incrementCount(artistCounts.value, gig.artist?.[0]?.name);
-        incrementCount(venueCounts.value, gig.venue?.[0]?.name);
-        const year = gig.date?.split('-')[0]; // Extract year from date
-        incrementCount(yearCounts.value, year);
-        incrementCount(typeCounts.value, gig.gigtype?.[0]?.name);
-      });
-    }
-
-    const applyQueryParameters = () => {
-      const { artist, venue, gigtype, date } = route.query;
-      filters.value.artist = artist || null;
-      filters.value.venue = venue || null;
-      filters.value.gigtype = gigtype || null;
-      filters.value.date = date || null;
-    };
-
-    const updateQueryParameters = () => {
-      const query = { ...filters.value };
-      Object.keys(query).forEach(key => {
-        if (!query[key]) {
-          delete query[key];
-        }
-      });
-      router.push({ query });
-    };
-    
-    watch(() => route.query, applyQueryParameters, { immediate: true });
-
-    onMounted(fetchGigs);
-
-    const clearAllFilters = () => {
-      filters.value = {
-        artist: null,
-        venue: null,
-        gigtype: null,
-        date: null
-      };
-      updateQueryParameters();
-    };
-
-    const removeFilter = (key) => {
-      filters.value[key] = null;
-      updateQueryParameters();
-    };
-
-    const applyFilter = (filter) => {
-      filters.value[filter.type] = filter.value;
-      updateQueryParameters();
-    };
-
-    const selectGig = (gig) => {
-      selectedGig.value = gig;
-    };
-
-    return {
-      gigs,
-      filters,
-      filteredGigs,
-      selectedGig,
-      loading,
-      clearAllFilters,
-      removeFilter,
-      applyFilter,
-      selectGig,
-      items,
-      artistCounts,
-      venueCounts,
-      yearCounts,
-      typeCounts
-    };
-  }
-};
-</script>
-
-<style>
-body {
-  font-family: 'Questrial', sans-serif;
-}
-header {
-  top: 0;
-  background-color: white;
-  z-index: 1000;
-}
-.spinner-container {
+<style scoped>
+#layout {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
   align-items: center;
-  height: 100vh;
+  gap: 32px;
+  padding: 0 24px;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.brand-group {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.brand-sub {
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+.brand-sub a {
+  color: #f59e0b;
+  text-decoration: none;
+}
+.brand-sub a:hover { text-decoration: underline; }
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-link {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-link:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.nav-link--active {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.page-content {
+  flex: 1;
+  padding: 32px 24px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
 }
 </style>

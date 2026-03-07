@@ -1,15 +1,8 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-const path = require("path");
-
-// https://vitejs.dev/config/
+// Set VITE_BASE_URL to your GitHub Pages repo path, e.g. /gig-visualiser/
 export default defineConfig({
   plugins: [vue()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  publicPath: "/"
+  base: process.env.VITE_BASE_URL || '/',
 })
