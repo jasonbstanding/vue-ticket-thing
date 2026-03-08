@@ -9,7 +9,7 @@ const navItems = [
   { to: '/gigs',    label: 'Gigs' },
   { to: '/heatmap', label: 'Heatmap' },
   { to: '/spend',     label: 'Spendy Trendy' },
-  { to: '/starburst', label: 'Starburst' },
+  { to: '/gig-tetris', label: 'Gig Tetris' },
 ]
 </script>
 

@@ -1,14 +1,14 @@
 <script setup>
-import { ref, computed, onMounted, shallowRef } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useTicketsStore } from '../stores/tickets.js'
 import { GIGTYPE_COLORS } from '../constants.js'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
-import { SunburstChart } from 'echarts/charts'
+import { TreemapChart } from 'echarts/charts'
 import { TooltipComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 
-use([CanvasRenderer, SunburstChart, TooltipComponent])
+use([CanvasRenderer, TreemapChart, TooltipComponent])
 
 const store = useTicketsStore()
 onMounted(() => store.fetchTickets())
@@ -35,10 +35,10 @@ function getValueBand(price) {
 }
 
 const DIMENSIONS = {
-  artist:  { label: 'Artist',    extract: t => (Array.isArray(t.artist)  ? t.artist.map(a => a.name)  : ['Unknown']) },
-  venue:   { label: 'Venue',     extract: t => (Array.isArray(t.venue)   ? t.venue.map(v => v.name)   : ['Unknown']) },
-  gigtype: { label: 'Gig Type',  extract: t => (Array.isArray(t.gigtype) ? t.gigtype.map(g => g.name) : ['Unknown']) },
-  year:    { label: 'Year',      extract: t => [t.date?.slice(0, 4) || 'Unknown'] },
+  artist:  { label: 'Artist',     extract: t => (Array.isArray(t.artist)  ? t.artist.map(a => a.name)  : ['Unknown']) },
+  venue:   { label: 'Venue',      extract: t => (Array.isArray(t.venue)   ? t.venue.map(v => v.name)   : ['Unknown']) },
+  gigtype: { label: 'Gig Type',   extract: t => (Array.isArray(t.gigtype) ? t.gigtype.map(g => g.name) : ['Unknown']) },
+  year:    { label: 'Year',       extract: t => [t.date?.slice(0, 4) || 'Unknown'] },
   value:   { label: 'Value Band', extract: t => [getValueBand(t.price)] },
 }
 
@@ -46,12 +46,11 @@ const DIMENSION_OPTIONS = Object.entries(DIMENSIONS).map(([k, v]) => ({ key: k, 
 
 // ── Controls ─────────────────────────────────────────────────────────────────
 
-const innerDim = ref('gigtype')
-const outerDim = ref('venue')
+const outerDim = ref('gigtype')
+const innerDim = ref('venue')
 
 // ── Chart data ───────────────────────────────────────────────────────────────
 
-// Palette for non-gigtype dimensions
 const PALETTE = [
   '#818cf8', '#fbbf24', '#f87171', '#34d399', '#60a5fa',
   '#d97706', '#fb923c', '#c084fc', '#38bdf8', '#f472b6',
@@ -61,33 +60,33 @@ const PALETTE = [
 
 function colorFor(name, dimKey) {
   if (dimKey === 'gigtype' && GIGTYPE_COLORS[name]) return GIGTYPE_COLORS[name]
-  return null // let echarts auto-assign
+  return null
 }
 
 const chartOption = computed(() => {
   const tickets = store.tickets
   if (!tickets.length) return {}
 
-  const innerKey = innerDim.value
   const outerKey = outerDim.value
-  const innerExtract = DIMENSIONS[innerKey].extract
+  const innerKey = innerDim.value
   const outerExtract = DIMENSIONS[outerKey].extract
+  const innerExtract = DIMENSIONS[innerKey].extract
 
-  // Build nested: inner -> outer -> count
+  // Build nested: outer -> inner -> count
   const nested = {}
   for (const t of tickets) {
-    const innerVals = innerExtract(t)
     const outerVals = outerExtract(t)
-    for (const iv of innerVals) {
-      if (!nested[iv]) nested[iv] = {}
-      for (const ov of outerVals) {
-        nested[iv][ov] = (nested[iv][ov] || 0) + 1
+    const innerVals = innerExtract(t)
+    for (const ov of outerVals) {
+      if (!nested[ov]) nested[ov] = {}
+      for (const iv of innerVals) {
+        nested[ov][iv] = (nested[ov][iv] || 0) + 1
       }
     }
   }
 
-  // Sort inner groups by total count descending
-  const innerEntries = Object.entries(nested)
+  // Sort outer groups by total count descending
+  const outerEntries = Object.entries(nested)
     .map(([name, children]) => ({
       name,
       total: Object.values(children).reduce((s, c) => s + c, 0),
@@ -95,28 +94,24 @@ const chartOption = computed(() => {
     }))
     .sort((a, b) => b.total - a.total)
 
-  // Assign palette colors for inner ring
-  const innerColorMap = {}
-  innerEntries.forEach((entry, i) => {
-    innerColorMap[entry.name] = colorFor(entry.name, innerKey) || PALETTE[i % PALETTE.length]
+  // Assign palette colors for outer groups
+  const outerColorMap = {}
+  outerEntries.forEach((entry, i) => {
+    outerColorMap[entry.name] = colorFor(entry.name, outerKey) || PALETTE[i % PALETTE.length]
   })
 
-  // Build echarts sunburst data
-  const data = innerEntries.map(entry => {
-    const baseColor = innerColorMap[entry.name]
-    const outerEntries = Object.entries(entry.children)
+  const data = outerEntries.map(entry => {
+    const baseColor = outerColorMap[entry.name]
+    const innerEntries = Object.entries(entry.children)
       .sort((a, b) => b[1] - a[1])
 
     return {
       name: entry.name,
       value: entry.total,
       itemStyle: { color: baseColor },
-      children: outerEntries.map(([name, count]) => ({
+      children: innerEntries.map(([name, count]) => ({
         name,
         value: count,
-        itemStyle: {
-          color: colorFor(name, outerKey) || undefined,
-        },
       })),
     }
   })
@@ -124,53 +119,69 @@ const chartOption = computed(() => {
   return {
     tooltip: {
       trigger: 'item',
-      formatter: ({ name, value, treePathInfo }) => {
-        if (treePathInfo && treePathInfo.length > 1) {
+      formatter: ({ data: d, treePathInfo }) => {
+        if (treePathInfo && treePathInfo.length > 2) {
           const parent = treePathInfo[treePathInfo.length - 2].name
-          return `<strong>${parent}</strong><br/>${name}: ${value}`
+          return `<strong>${parent}</strong><br/>${d.name}: ${d.value}`
         }
-        return `<strong>${name}</strong>: ${value}`
+        return `<strong>${d.name}</strong>: ${d.value}`
       },
     },
     series: [{
-      type: 'sunburst',
+      type: 'treemap',
       data,
-      radius: ['15%', '90%'],
-      sort: 'desc',
-      emphasis: { focus: 'ancestor' },
-      levels: [
-        {},
-        {
-          r0: '15%',
-          r: '50%',
-          label: {
-            show: true,
-            rotate: 'tangential',
-            fontSize: 12,
-            color: '#e2e8f0',
-            overflow: 'truncate',
-            width: 80,
-          },
+      width: '100%',
+      height: '100%',
+      roam: false,
+      nodeClick: 'zoomToNode',
+      breadcrumb: {
+        show: true,
+        bottom: 10,
+        left: 10,
+        itemStyle: {
+          color: '#1e293b',
+          borderColor: '#334155',
+          textStyle: { color: '#e2e8f0' },
+        },
+        emphasis: {
           itemStyle: {
-            borderWidth: 2,
+            color: '#334155',
+          },
+        },
+      },
+      levels: [
+        {
+          // Outer level (groups)
+          itemStyle: {
             borderColor: '#0f172a',
+            borderWidth: 3,
+            gapWidth: 3,
+          },
+          upperLabel: {
+            show: true,
+            height: 28,
+            fontSize: 13,
+            fontWeight: 600,
+            color: '#f1f5f9',
+            overflow: 'truncate',
           },
         },
         {
-          r0: '50%',
-          r: '90%',
+          // Inner level (children)
+          itemStyle: {
+            borderColor: '#0f172a',
+            borderWidth: 1,
+            gapWidth: 1,
+          },
           label: {
             show: true,
-            rotate: 'tangential',
-            fontSize: 10,
-            color: '#cbd5e1',
+            fontSize: 11,
+            color: '#e2e8f0',
             overflow: 'truncate',
-            width: 70,
+            formatter: '{b}\n{c}',
           },
-          itemStyle: {
-            borderWidth: 1,
-            borderColor: '#0f172a',
-          },
+          colorSaturation: [0.3, 0.7],
+          colorMappingBy: 'value',
         },
       ],
     }],
@@ -183,9 +194,9 @@ const totalGigs = computed(() => store.tickets.length)
 <template>
   <div class="view">
     <header class="view-header">
-      <h1 class="view-title">Starburst</h1>
+      <h1 class="view-title">Gig Tetris</h1>
       <p class="view-subtitle">
-        Sunburst breakdown of {{ totalGigs }} gigs. Inner ring splits by one dimension, outer ring by another.
+        Treemap breakdown of {{ totalGigs }} gigs. Click a group to zoom in, use the breadcrumb to zoom back out.
       </p>
     </header>
 
@@ -195,13 +206,13 @@ const totalGigs = computed(() => store.tickets.length)
     <template v-else>
       <div class="controls">
         <div class="control-group">
-          <label class="control-label" for="inner-dim">Inner ring</label>
-          <select id="inner-dim" v-model="innerDim" class="control-select">
+          <label class="control-label" for="outer-dim">Group by</label>
+          <select id="outer-dim" v-model="outerDim" class="control-select">
             <option
               v-for="opt in DIMENSION_OPTIONS"
               :key="opt.key"
               :value="opt.key"
-              :disabled="opt.key === outerDim"
+              :disabled="opt.key === innerDim"
             >
               {{ opt.label }}
             </option>
@@ -209,13 +220,13 @@ const totalGigs = computed(() => store.tickets.length)
         </div>
 
         <div class="control-group">
-          <label class="control-label" for="outer-dim">Outer ring</label>
-          <select id="outer-dim" v-model="outerDim" class="control-select">
+          <label class="control-label" for="inner-dim">Then by</label>
+          <select id="inner-dim" v-model="innerDim" class="control-select">
             <option
               v-for="opt in DIMENSION_OPTIONS"
               :key="opt.key"
               :value="opt.key"
-              :disabled="opt.key === innerDim"
+              :disabled="opt.key === outerDim"
             >
               {{ opt.label }}
             </option>
@@ -299,9 +310,11 @@ const totalGigs = computed(() => store.tickets.length)
   color: var(--text-faint);
 }
 
-/* Chart */
+/* Chart — break out of the 1100px page-content constraint */
 .chart-container {
-  width: 100%;
-  height: 700px;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  height: calc(100vh - 56px - 140px);
+  min-height: 500px;
 }
 </style>
