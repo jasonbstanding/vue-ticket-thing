@@ -8,6 +8,7 @@ const props = defineProps({
   gridData:      { type: Object, required: true },
   years:         { type: Array,  required: true },
   gigtypeColors: { type: Object, required: true },
+  mode:          { type: String, default: 'count' }, // 'count' | 'spend'
 })
 
 // ── Year totals ───────────────────────────────────────────────────────────────
@@ -53,20 +54,40 @@ function onYearTotalEnter(year) {
 function onCellLeave() { tooltip.value = null }
 
 // ── Colour scale ──────────────────────────────────────────────────────────────
-function cellBg(count) {
-  if (count === 0)  return 'var(--cell-empty)'
-  if (count === 1)  return '#14532d'   // dark green
-  if (count <= 4)   return '#16a34a'   // green
-  if (count <= 8)   return '#ca8a04'   // yellow
-  if (count <= 14)  return '#ea580c'   // orange
-  if (count <= 20)  return '#dc2626'   // red
-  if (count <= 25)  return '#7c3aed'   // purple
-  return '#f1f5f9'                     // white
+function countBg(v) {
+  if (v === 0)  return 'var(--cell-empty)'
+  if (v === 1)  return '#14532d'
+  if (v <= 4)   return '#16a34a'
+  if (v <= 8)   return '#ca8a04'
+  if (v <= 14)  return '#ea580c'
+  if (v <= 20)  return '#dc2626'
+  if (v <= 25)  return '#7c3aed'
+  return '#f1f5f9'
 }
 
-function cellTextColor(count) {
-  if (count >= 26) return '#1e293b'   // dark text on near-white
-  return '#f1f5f9'                    // white text on everything else
+function spendBg(v) {
+  if (v === 0)    return 'var(--cell-empty)'
+  if (v <= 10)    return '#14532d'
+  if (v <= 25)    return '#16a34a'
+  if (v <= 50)    return '#ca8a04'
+  if (v <= 100)   return '#ea580c'
+  if (v <= 200)   return '#dc2626'
+  if (v <= 500)   return '#7c3aed'
+  return '#f1f5f9'
+}
+
+function cellBg(value) {
+  return props.mode === 'spend' ? spendBg(value) : countBg(value)
+}
+
+function cellTextColor(value) {
+  const threshold = props.mode === 'spend' ? 500 : 26
+  return value > threshold ? '#1e293b' : '#f1f5f9'
+}
+
+function formatValue(v) {
+  if (props.mode === 'spend') return '\u00A3' + v.toFixed(0)
+  return v
 }
 
 function dotsForCell(byType) {
@@ -101,7 +122,7 @@ function dotsForCell(byType) {
             class="cell-count"
             :style="{ color: cellTextColor(yearTotals[year].count) }"
           >
-            {{ yearTotals[year].count }}
+            {{ formatValue(yearTotals[year].count) }}
           </span>
           <div v-if="yearTotals[year]?.count" class="cell-dots">
             <span
@@ -127,7 +148,7 @@ function dotsForCell(byType) {
             class="cell-count"
             :style="{ color: cellTextColor(gridData[year][mi+1].count) }"
           >
-            {{ gridData[year][mi+1].count }}
+            {{ formatValue(gridData[year][mi+1].count) }}
           </span>
 
           <div v-if="gridData[year]?.[mi+1]?.count" class="cell-dots">
@@ -152,20 +173,20 @@ function dotsForCell(byType) {
         <!-- Year total tooltip -->
         <template v-if="tooltip.type === 'yearTotal'">
           <div class="tt-heading">{{ tooltip.year }}</div>
-          <div class="tt-total">{{ tooltip.total.count }} gig{{ tooltip.total.count !== 1 ? 's' : '' }} total</div>
+          <div class="tt-total">{{ formatValue(tooltip.total.count) }}{{ mode === 'count' ? ` gig${tooltip.total.count !== 1 ? 's' : ''} total` : ' total' }}</div>
           <div v-for="(count, type) in tooltip.total.byType" :key="type" class="tt-row">
             <span class="tt-swatch" :style="{ background: gigtypeColors[type] ?? '#64748b' }"></span>
-            <span>{{ type }}: <strong>{{ count }}</strong></span>
+            <span>{{ type }}: <strong>{{ formatValue(count) }}</strong></span>
           </div>
         </template>
 
         <!-- Month cell tooltip -->
         <template v-else>
           <div class="tt-heading">{{ tooltip.monthLabel }} {{ tooltip.year }}</div>
-          <div class="tt-total">{{ tooltip.cell.count }} gig{{ tooltip.cell.count !== 1 ? 's' : '' }}</div>
+          <div class="tt-total">{{ formatValue(tooltip.cell.count) }}{{ mode === 'count' ? ` gig${tooltip.cell.count !== 1 ? 's' : ''}` : '' }}</div>
           <div v-for="(count, type) in tooltip.cell.byType" :key="type" class="tt-row">
             <span class="tt-swatch" :style="{ background: gigtypeColors[type] ?? '#64748b' }"></span>
-            <span>{{ type }}: <strong>{{ count }}</strong></span>
+            <span>{{ type }}: <strong>{{ formatValue(count) }}</strong></span>
           </div>
         </template>
       </div>

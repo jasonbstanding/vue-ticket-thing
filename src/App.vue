@@ -8,7 +8,7 @@ const store = useTicketsStore()
 const navItems = [
   { to: '/gigs',    label: 'Gigs' },
   { to: '/heatmap', label: 'Heatmap' },
-  { to: '/spend',     label: 'Spend' },
+  { to: '/spend',     label: 'Spendy Trendy' },
   { to: '/starburst', label: 'Starburst' },
 ]
 </script>
