@@ -4,7 +4,7 @@ Running at https://tickets.jasonbstanding.com
 
 ## WTF is this?
 
-I've got every gig ticket* I've ever bought/used stored in my wordpress blog and exposed on a REST API, 
+I've got every gig ticket* I've ever bought/used stored in my wordpress blog and exposed on a REST API,
 so all that HIGHLY VALUABLE DATA needed a way of being surfaced in order to provide the massive benefit
 to mankind that it represents.
 
@@ -12,49 +12,41 @@ The first iteration was https://github.com/jasonbstanding/vue-ticket-thing/tree/
 misused Vuex intended as a way for me to try to learn a few Vue concepts.  However I lost my rag with it and opted for the "just make it work"
 approach.
 
-This version was borne of a need to start from scratch as the Heroku hosting I had stopped being free, and then Vue 2 went EOL.
+The second version was a Vue 3 rewrite, borne of a need to start from scratch as the Heroku hosting I had stopped being free, and then Vue 2 went EOL.
+Hard to say whether ChatGPT saved me any time or not on that one.
 
-The Vue 3 version has barely any functionality, although I think works a lot nicer.  No local store is used, because I pulled my finger out and put
-some caching on the API layer (instead of hammering my WP site every time).
+This version (v1.1, "The Ticket Thing") is a ground-up rewrite with three views:
 
-It's probably worth owning up at this point - I got ChatGPT to write most of this code for me.  And by "most", I mean, well, "all".  Apart from
-fixing the bits that were OBVIOUSLY fucked.  Hard to say whether it saved me any time or not, or whether the timed saved was worth the sanity cost
-of asking it to write me a Vue 3 app, and then having to go back and tell it that any packages it uses must be compatible with Vue 3.  Getting the
-initial prompt right to build the bulk of the app took me 3 tries.
+- **Gigs** - Card grid browser with filter dropdowns (artist, venue, year, type), sorting, and detail modal
+- **Heatmap** - Year x month heatmap grid with colour intensity scale, gigtype dots, sticky headers, year totals, and type filters
+- **Spend** - Cumulative spend line chart with per-type breakdown, average ticket price, and milestone markers
 
-*"gig ticket" is a broad church, taking in plays, films, festivals, tours, museums, and even a dog show. But not transport.  Got to draw a line somewhere.
+Built with Vue 3 (Composition API), Pinia, Vue Router (hash mode for GitHub Pages), Chart.js, and Vite.
+Written with Claude Code (Anthropic).
 
-### TODO
-
-- [x] Link back to blog
-- [x] Google Analytics so I can empirically prove that nobody's looking at this
-- [x] Maybe some dropdown menus with things in?
-- [x] Deep linking to searches
-- [x] Put a less shit spinner in
-- [ ] Stats page using D3 or something
-- [ ] Text search of data
-- [ ] Instructions on wtf to do with it
-- [ ] Sort by cost
+*"gig ticket" is a broad church, taking in plays, films, festivals, tours, museums, and even a dog show. But not transport. Got to draw a line somewhere.
 
 ## Project setup
+
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Dev server
 ```
-npm run serve
+npm run dev
 ```
 
-### Compiles and minifies for production
+### Build for production
 ```
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+### Environment variables
+
+- `.env` - local dev API endpoint
+- `.env.production` - production API endpoint
+- `VITE_BASE_URL` - set to repo path (e.g. `/vue-ticket-thing/`) for GitHub Pages deployment
 
 ### Other crap to remember
 After testing locally, build then commit `dist` - then push the dist subtree to `gh-pages`
@@ -65,6 +57,6 @@ git subtree push --prefix dist origin gh-pages
 ```
 (OR if necessary)
 ```
-git push origin `git subtree split --prefix dist main`:gh-pages --force\n
+git push origin `git subtree split --prefix dist main`:gh-pages --force
 ```
 and then remember to set custom domain up again in https://github.com/jasonbstanding/vue-ticket-thing/settings/pages
