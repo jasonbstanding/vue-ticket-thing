@@ -26,6 +26,9 @@ const years = computed(() =>
   [...new Set(store.tickets.map(t => t.date.slice(0, 4)))].sort().reverse()
 )
 
+// ── Mode toggle ──────────────────────────────────────────────────────────────
+const mode = ref('count') // 'count' | 'spend'
+
 // ── Filter state ──────────────────────────────────────────────────────────────
 const activeTypes = ref(new Set())
 
@@ -64,6 +67,40 @@ const gridData = computed(() => {
   return data
 })
 
+// ── Spend grid computation ────────────────────────────────────────────────────
+const spendGridData = computed(() => {
+  const data = {}
+  for (const ticket of store.tickets) {
+    const [year, monthStr] = ticket.date.split('-')
+    const month = parseInt(monthStr)
+    const price = parseFloat(ticket.price)
+    if (isNaN(price)) continue
+    const types = Array.isArray(ticket.gigtype) ? ticket.gigtype : []
+    const matching = types.filter(gt => activeTypes.value.has(gt.name))
+    if (matching.length === 0) continue
+
+    if (!data[year]) data[year] = {}
+    if (!data[year][month]) data[year][month] = { count: 0, byType: {} }
+
+    data[year][month].count += price
+    for (const gt of matching) {
+      data[year][month].byType[gt.name] = (data[year][month].byType[gt.name] ?? 0) + price
+    }
+  }
+  // Round values for display
+  for (const year of Object.keys(data)) {
+    for (const month of Object.keys(data[year])) {
+      data[year][month].count = Math.round(data[year][month].count * 100) / 100
+      for (const type of Object.keys(data[year][month].byType)) {
+        data[year][month].byType[type] = Math.round(data[year][month].byType[type] * 100) / 100
+      }
+    }
+  }
+  return data
+})
+
+const activeGridData = computed(() => mode.value === 'spend' ? spendGridData.value : gridData.value)
+
 // ── Summary stats ─────────────────────────────────────────────────────────────
 const visibleCount = computed(() =>
   store.tickets.filter(t =>
@@ -71,16 +108,29 @@ const visibleCount = computed(() =>
   ).length
 )
 
-const INTENSITY_LEVELS = [
+const COUNT_LEVELS = [
   { label: '0',     bg: 'var(--cell-empty)' },
   { label: '1',     bg: '#14532d' },
-  { label: '2–4',   bg: '#16a34a' },
-  { label: '5–8',   bg: '#ca8a04' },
-  { label: '9–14',  bg: '#ea580c' },
-  { label: '15–20', bg: '#dc2626' },
-  { label: '21–25', bg: '#7c3aed' },
+  { label: '2\u20134',   bg: '#16a34a' },
+  { label: '5\u20138',   bg: '#ca8a04' },
+  { label: '9\u201314',  bg: '#ea580c' },
+  { label: '15\u201320', bg: '#dc2626' },
+  { label: '21\u201325', bg: '#7c3aed' },
   { label: '26+',   bg: '#f1f5f9' },
 ]
+
+const SPEND_LEVELS = [
+  { label: '\u00A30',      bg: 'var(--cell-empty)' },
+  { label: '\u2264\u00A310',   bg: '#14532d' },
+  { label: '\u2264\u00A325',   bg: '#16a34a' },
+  { label: '\u2264\u00A350',   bg: '#ca8a04' },
+  { label: '\u2264\u00A3100',  bg: '#ea580c' },
+  { label: '\u2264\u00A3200',  bg: '#dc2626' },
+  { label: '\u2264\u00A3500',  bg: '#7c3aed' },
+  { label: '>\u00A3500', bg: '#f1f5f9' },
+]
+
+const activeLevels = computed(() => mode.value === 'spend' ? SPEND_LEVELS : COUNT_LEVELS)
 </script>
 
 <template>
@@ -89,7 +139,7 @@ const INTENSITY_LEVELS = [
     <header class="view-header">
       <h1 class="view-title">Gig Heatmap</h1>
       <p class="view-subtitle">
-        Gigs per month, coloured by intensity.
+        {{ mode === 'spend' ? 'Spend per month' : 'Gigs per month' }}, coloured by intensity.
         Dots show type breakdown. Showing {{ visibleCount }} of {{ store.tickets.length }} gigs.
       </p>
     </header>
@@ -98,6 +148,24 @@ const INTENSITY_LEVELS = [
     <div v-else-if="store.error" class="state-msg state-error">Error: {{ store.error }}</div>
 
     <template v-else>
+
+      <!-- Mode toggle -->
+      <section class="mode-toggle">
+        <button
+          class="mode-btn"
+          :class="{ 'mode-btn--active': mode === 'count' }"
+          @click="mode = 'count'"
+        >
+          Gig Count
+        </button>
+        <button
+          class="mode-btn"
+          :class="{ 'mode-btn--active': mode === 'spend' }"
+          @click="mode = 'spend'"
+        >
+          Spend
+        </button>
+      </section>
 
       <!-- Filter chips -->
       <section class="filter-section">
@@ -130,7 +198,7 @@ const INTENSITY_LEVELS = [
       <section class="legend">
         <span class="filter-label">Intensity</span>
         <div class="legend-items">
-          <div v-for="level in INTENSITY_LEVELS" :key="level.label" class="legend-item">
+          <div v-for="level in activeLevels" :key="level.label" class="legend-item">
             <span class="legend-swatch" :style="{ background: level.bg }"></span>
             <span class="legend-label">{{ level.label }}</span>
           </div>
@@ -139,9 +207,10 @@ const INTENSITY_LEVELS = [
 
       <!-- Heatmap -->
       <GigHeatmap
-        :grid-data="gridData"
+        :grid-data="activeGridData"
         :years="years"
         :gigtype-colors="GIGTYPE_COLORS"
+        :mode="mode"
       />
 
     </template>
@@ -180,6 +249,38 @@ const INTENSITY_LEVELS = [
 }
 
 .state-error { color: #f87171; }
+
+/* Mode toggle */
+.mode-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+  width: fit-content;
+}
+
+.mode-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mode-btn:hover {
+  color: var(--text);
+}
+
+.mode-btn--active {
+  background: var(--surface-2);
+  color: var(--text);
+}
 
 /* Filter */
 .filter-section {
