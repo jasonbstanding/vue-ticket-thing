@@ -1,13 +1,21 @@
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useTicketsStore } from '../stores/tickets.js'
 import { GIGTYPE_COLORS } from '../constants.js'
 
 const store = useTicketsStore()
+const route  = useRoute()
+const router = useRouter()
 onMounted(() => store.fetchTickets())
 
 // ── Filters ───────────────────────────────────────────────────────────────────
-const filters = reactive({ artist: null, venue: null, year: null, gigtype: null })
+const filters = reactive({
+  artist:  route.query.artist  || null,
+  venue:   route.query.venue   || null,
+  year:    route.query.year    || null,
+  gigtype: route.query.gigtype || null,
+})
 
 const hasFilters = computed(() => Object.values(filters).some(v => v))
 
@@ -32,9 +40,10 @@ function clearFilters() {
 }
 
 // ── Sorting ───────────────────────────────────────────────────────────────────
-const sortKey = ref('date')
-const sortDir = ref('desc')
-const listSort = ref('freq') // for filter dropdown lists: 'freq' | 'asc' | 'desc'
+const [initSortKey, initSortDir] = (route.query.sort ?? 'date-desc').split('-')
+const sortKey  = ref(initSortKey || 'date')
+const sortDir  = ref(initSortDir || 'desc')
+const listSort = ref(route.query.listSort || 'freq')
 
 const SORT_LABELS = {
   'date-desc':   'Date: newest first',
@@ -50,6 +59,42 @@ function setSort(key, dir) {
   sortDir.value = dir
   openDropdown.value = null
 }
+
+// ── URL sync ──────────────────────────────────────────────────────────────────
+function buildQuery() {
+  const q = {}
+  if (filters.artist)  q.artist  = filters.artist
+  if (filters.venue)   q.venue   = filters.venue
+  if (filters.year)    q.year    = filters.year
+  if (filters.gigtype) q.gigtype = filters.gigtype
+  if (sortKey.value !== 'date' || sortDir.value !== 'desc')
+    q.sort = `${sortKey.value}-${sortDir.value}`
+  if (listSort.value !== 'freq')
+    q.listSort = listSort.value
+  return q
+}
+
+watch(
+  [() => filters.artist, () => filters.venue, () => filters.year, () => filters.gigtype, sortKey, sortDir, listSort],
+  () => {
+    const q = buildQuery()
+    const cur = route.query
+    const keys = Object.keys(q)
+    const changed = keys.length !== Object.keys(cur).length || keys.some(k => q[k] !== cur[k])
+    if (changed) router.replace({ query: q })
+  }
+)
+
+watch(() => route.query, (q) => {
+  filters.artist  = q.artist  || null
+  filters.venue   = q.venue   || null
+  filters.year    = q.year    || null
+  filters.gigtype = q.gigtype || null
+  const [k, d]   = (q.sort ?? 'date-desc').split('-')
+  sortKey.value  = k || 'date'
+  sortDir.value  = d || 'desc'
+  listSort.value = q.listSort || 'freq'
+}, { deep: true })
 
 // ── Dropdown state ────────────────────────────────────────────────────────────
 const openDropdown = ref(null)
